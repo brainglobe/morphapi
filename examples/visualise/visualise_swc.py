@@ -8,11 +8,11 @@ from morphapi.morphology.morphology import Neuron
     https://github.com/BrancoLab/BrainRender
 """
 
-fp = 'examples/example_files/example3.swc'
+fp = 'examples/example_files/example1.swc'
 
 # Create vtkplotter actors from the .swc file
 neuron = Neuron(swc_file=fp)
-components, neuron = neuron.create_mesh(fixed_neurite_radius=.3, # Set this as None to use the actual radius
+components, neuron = neuron.create_mesh(fixed_neurite_radius=3, # Set this as None to use the actual radius
                 soma_color='salmon', # Specify colors [see vtkplotter.colors for more details]
                 apical_dendrites_color='darkseagreen',
                 basal_dendrites_color='orangered',

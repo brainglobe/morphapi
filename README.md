@@ -19,6 +19,8 @@ the BlueBrain project ([github](https://github.com/BlueBrain/NeuroM)) to reconst
 from `.swc` files and on [`vtkplotter`](https://github.com/marcomusy/vtkplotter) to create 3d
 rendering from morphological data.
 
+![](media/exampleneuron.png)
+
 ## Installation
 To install the latest stable build simply use:
 ```
