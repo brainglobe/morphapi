@@ -14,11 +14,32 @@ from `.swc` files and on [`vtkplotter`](https://github.com/marcomusy/vtkplotter)
 rendering from morphological data.
 
 ## Installation
-morphapi will be published on Pypi soon, meanwhile you can install with:
+To install the latest stable build simply use:
+```
+  pip install morphapi
+```
 
+To upgrade:
+```
+  pip install -U morphapi
+```
+
+If you want to get the latest code from the github you can use:
 ```
     pip install git+https://github.com/brainglobe/morphapi.git
 ```
+
+
+## Usage
+To see how to use morphapi to **download** neuronal morphological data, head over to the examples
+[here](examples/download).
+
+To see how to **visualise** neurons in 3d, have a look [here](examples/visualise).
+Keep in mind though that [brainrender](https://github.com/BrancoLab/BrainRender) is the reccomended way to visualise neural morphologies.
+
+
+
+
 
 
 
