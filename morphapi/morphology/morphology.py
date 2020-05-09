@@ -38,7 +38,7 @@ class Neuron:
         else:
             self.data_file = None
             self.data_file_type = None
-            self.loaded = None
+            self.morphology = None
             self.points = None
 
         if self.data_file is not None:
@@ -79,7 +79,6 @@ class Neuron:
 
 
     def load_from_file(self):
-        print('Loading neuron morphology data')
         if self.data_file_type is None:
             return
         elif self.data_file_type == 'json':
@@ -95,7 +94,7 @@ class Neuron:
         soma_radius = nrn.soma.points[0, -1]
 
         # Get the rest of the data and store it
-        self.loaded = nrn
+        self.morphology = nrn
         self.points = dict(
             soma=component(soma_pos[0], soma_pos[1], soma_pos[2], soma_pos, soma_radius, nrn.soma),
             )
@@ -155,25 +154,5 @@ class Neuron:
         [act.c(basal_dendrites_color) for act in neurites['basal_dendrites']]
         [act.c(apical_dendrites_color) for act in neurites['apical_dendrites']]
         [act.c(axon_color) for act in neurites['axon']]
-        
-        
-        
-        # TODO fix radii / smoothing
-        # TODO saving and styling actors
 
         return neurites, whole_neuron
-
-
-
-
-
-        
-        
-if __name__ == "__main__":
-    fp = '/Users/federicoclaudi/Documents/Github/brainrenderscenes/morphologies/bailey/CNG version/Layer-2-3-Ethanol-7.CNG.swc'
-
-
-    neuro = Neuron(swc_file=fp)
-
-    neuro.create_mesh()
-

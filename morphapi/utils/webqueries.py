@@ -1,7 +1,7 @@
 import sys
 sys.path.append("./")
 
-from brainrender.Utils.data_io import connected_to_internet
+from morphapi.utils.data_io import connected_to_internet
 
 import requests
 import time

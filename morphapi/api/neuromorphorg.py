@@ -1,5 +1,5 @@
 
-from brainrender.Utils.webqueries import request
+from morphapi.utils.webqueries import request
 
 
 class NeuroMorpOrgAPI():
