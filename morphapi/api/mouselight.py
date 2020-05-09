@@ -374,7 +374,8 @@ class MouseLightAPI(Paths):
         :returns: list of Neuron instances
 
         """
-
+        if not isinstance(neurons_metadata, (list, tuple)):
+            neurons_metadata = [neurons_metadata]
         nmapi = NeuroMorpOrgAPI()
 
         neurons = []
