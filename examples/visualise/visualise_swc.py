@@ -11,13 +11,13 @@ from morphapi.morphology.morphology import Neuron
 fp = 'examples/example_files/example3.swc'
 
 # Create vtkplotter actors from the .swc file
-neuro = Neuron(swc_file=fp)
-components, neuron = neuro.create_mesh(fixed_neurite_radius=.3, # Set this as None to use the actual radius
+neuron = Neuron(swc_file=fp)
+components, neuron = neuron.create_mesh(fixed_neurite_radius=.3, # Set this as None to use the actual radius
                 soma_color='salmon', # Specify colors [see vtkplotter.colors for more details]
                 apical_dendrites_color='darkseagreen',
                 basal_dendrites_color='orangered',
                 axon_color='blackboard',
-                whole_neuron_color='ivory')
+                whole_neuron_color='blackboard')
 
 # components stores an actor for each neuronal component (dendrites, soma...)
 # neuron is a single actor for the entire neuron

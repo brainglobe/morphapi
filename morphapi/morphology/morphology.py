@@ -114,6 +114,10 @@ class Neuron:
                     axon_color, whole_neuron_color, kwargs = \
                                         self._parse_mesh_kwargs(**kwargs)
 
+        if fixed_neurite_radius:
+            if not isinstance(fixed, (int, float)) or not fixed_neurite_radius > 0:
+                raise ValueError(f'Invalid value for parameter fixed_neurite_radius, should be a float > 0')
+
         # Create soma actor
         neurites = {}
         soma = Sphere(pos=self.points['soma'].coords, r=self.points['soma'].radius, c=soma_color)

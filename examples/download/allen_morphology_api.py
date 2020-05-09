@@ -1,27 +1,15 @@
 from vtkplotter import Plotter
 
-from morphapi.morphology.morphology import Neuron
-from morphapi.api.allenmorphology import AllenMorphology
+from morphapi.api.mouselight import MouseLightAPI
 
-amapi = AllenMorphology()
 
 # ---------------------------- Downloading neurons --------------------------- #
-print('Neurons metadata:')
-print(amapi.neurons.head())
-# you can use the metadata to select which neurons to download
+mlapi = MouseLightAPI()
 
-# e.g. select only neurons with full reconstructions
-neurons_metadata = amapi.neurons.loc[amapi.neurons['reconstruction_type'] == 'full']
+# Fetch metadata for neurons with some in the secondary motor cortex
+neurons_metadata = mlapi.fetch_neurons_metadata(filterby='soma', filter_regions=['MOs'])
 
-print('\n\ndownloading neurons')
-neurons = amapi.download_neurons(neurons_metadata.id.values[0])
-# Download neurons by passing IDs values
-
-"""
-    amapi.download_neurons returns a list of instances of the class Neuron
-    from morphapi.morphology.morphology.
-"""
-
+neurons = mlapi.download_neurons(neurons_metadata[0]) # downloading only one neuron to speed things up
 
 # ------------------------------- Visualisation ------------------------------ #
 print('creating meshes')

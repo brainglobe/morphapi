@@ -12,6 +12,7 @@ from morphapi.morphology.morphology import Neuron
 from morphapi.utils.webqueries import post_mouselight, mouselight_base_url
 from morphapi.paths_manager import Paths
 from morphapi.utils.data_io import is_any_item_in_list
+from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 
 
 """
@@ -363,192 +364,208 @@ class MouseLightAPI(Paths):
         return neurons
 
 
-
-
-
-
-    @staticmethod
-    def make_json(neuron, file_path,  axon_tracing=None, dendrite_tracing=None):
-        """
-        Creates a .json file with the neuron's data that can be read by the mouselight parser.
-
-        :param neuron: dict with neuron's data
-        :param file_path: str, path where to save the json file
-        :param axon_tracing: list with data for axon tracing (Default value = None)
-        :param dendrite_tracing: list with data for dendrite tracing (Default value = None)
-
-        """
-        # parse axon
-        if axon_tracing is not None:
-            nodes = axon_tracing[0]['nodes']
-            axon = [
-                dict(
-                    sampleNumber = n['sampleNumber'],
-                    x = n['x'],
-                    y = n['y'],
-                    z = n['z'],
-                    radius = n['radius'],
-                    parentNumber = n['parentNumber'],
-                )
-                for n in nodes]
-        else:
-            axon = []
-
-        # parse dendrites
-        if dendrite_tracing is not None:
-            nodes = dendrite_tracing[0]['nodes']
-            dendrite = [
-                dict(
-                    sampleNumber = n['sampleNumber'],
-                    x = n['x'],
-                    y = n['y'],
-                    z = n['z'],
-                    radius = n['radius'],
-                    parentNumber = n['parentNumber'],
-                )
-                for n in nodes]
-        else:
-            dendrite = []
-
-        content = dict(
-            neurons = [
-                dict(
-                    idString = neuron['idString'],
-                    soma = dict(
-                        x = neuron['soma'].x,
-                        y = neuron['soma'].y,
-                        z = neuron['soma'].z,
-                    ),
-                    axon = axon, 
-                    dendrite = dendrite,
-
-                )
-            ]
-        )
-
-
-        # save to file
-        if not filepath.endswith('.json'):
-            raise ValueError(f'Invalid file path {filepath}')
-        with open(file_path, 'w') as f:
-            json.dump(content, f)
-
-    @staticmethod
-    def make_swc(neuron, file_path,  axon_tracing=None, dendrite_tracing=None):
-        """
-        Creates a .swc file with the neuron's data that can be read by the mouselight parser.
-
-        :param neuron: dict with neuron's data
-        :param file_path: str, path where to save the swc file
-        :param axon_tracing: list with data for axon tracing (Default value = None)
-        :param dendrite_tracing: list with data for dendrite tracing (Default value = None)
-
-        """
-
-        if not file_path.endswith('.swc'):
-            raise ValueError(f'Invalid file path {file_path}')
-
-        # parse data
-        if axon_tracing is not None:
-            nodes = axon_tracing[0]['nodes']
-            axon = [
-                dict(
-                    sampleNumber = n['sampleNumber'],
-                    x = n['x'],
-                    y = n['y'],
-                    z = n['z'],
-                    id = 5,
-                    radius = n['radius'],
-                    parentNumber = n['parentNumber'],
-                )
-                for n in nodes]
-        else:
-            axon = []
-
-        if dendrite_tracing is not None:
-            nodes = dendrite_tracing[0]['nodes']
-            dendrite = [
-                dict(
-                    sampleNumber = n['sampleNumber'],
-                    x = n['x'],
-                    y = n['y'],
-                    z = n['z'],
-                    radius = n['radius'],
-                    id = 3,
-                    parentNumber = n['parentNumber'],
-                )
-                for n in nodes]
-        else:
-            dendrite = []
-
-        # Save as swc
-        with open(file_path, 'w') as out:
-            out.write(f"# neuron: {neuron['idString']} downloaded from mouselight database [janelia campus]\n")
-            out.write(f"# .swc reconstructed using morphapi python package https://github.com/brainglobe/morphapi\n\n")
-
-
-            out.write(f" 1 1 {neuron['soma'].x} {neuron['soma'].y} {neuron['soma'].z} {neuron['soma'].r} -1\n")
-
-            neurites = dict(dendrite, **user)
-            sort_idx = np.argsort([n['parentNumber'] for n in neurites])
-            neurites = list(np.array(neurites)[sort_idx])
-
-            for n in neurites:
-                out.write(f" {n['sampleNumber']} {n['id']} {n['x']} {n['y']} {n['z']} {n['radius']} {n['parentNumber']}\n")
-
     def download_neurons(self, neurons_metadata):
         """
-        Given a list of neurons metadata, self.fetch_neurons_metadata
-        this function downlaods tracing data from http://ml-neuronbrowser.janelia.org/tracings/tracings.
-        and reconstructs them with the Neuron class
-
+        Given a list of neurons metadata from self.fetch_neurons_metadata
+        this funcition downloads the morphological data.
+        The data are actually downloaded from neuromorpho.org
+        
         :param neurons_metadata: list with metadata for neurons to download
         :returns: list of Neuron instances
 
         """
 
-        def get(url, tracing_id): # send a query for a single tracing ID
-            """
-            Creates the URL for each neuron to download
+        nmapi = NeuroMorpOrgAPI()
 
-            :param url: str with url
-            :param tracing_id: str with the neuron's ID
-
-            """
-            query = {"ids":[tracing_id]}
-            res = post_mouselight(url, query=query, clean=True)['tracings']
-            return res
-
-        if neurons_metadata is None or not neurons_metadata:
-            return None
-        print("Downloading neurons tracing data from Mouse Light")
-
-        # check arguments
-        if not isinstance(neurons_metadata, list): neurons_metadata = [neurons_metadata]
-
-        # URL used to fetch neurons
-        url = mouselight_base_url + "tracings/tracings"
-
-        # loop over neurons
         neurons = []
         for neuron in tqdm(neurons_metadata):
-            # Check if a .swc file already exists for this neuron
-            file_path = os.path.join(self.mouselight_cache, neuron['idString']+".swc")
+            neurons.append(nmapi.download_neurons(nmapi.get_neuron_by_name(neuron['idString'])))
+
+        # ? Old code
+        # def get(url, tracing_id): # send a query for a single tracing ID
+        #     """
+        #     Creates the URL for each neuron to download
+
+        #     :param url: str with url
+        #     :param tracing_id: str with the neuron's ID
+
+        #     """
+        #     query = {"ids":[tracing_id]}
+        #     res = post_mouselight(url, query=query, clean=True)['tracings']
+        #     return res
+
+        # if neurons_metadata is None or not neurons_metadata:
+        #     return None
+        # print("Downloading neurons tracing data from Mouse Light")
+
+        # # check arguments
+        # if not isinstance(neurons_metadata, list): neurons_metadata = [neurons_metadata]
+
+        # # URL used to fetch neurons
+        # url = mouselight_base_url + "tracings/tracings"
+
+        # # loop over neurons
+        # neurons = []
+        # for neuron in tqdm(neurons_metadata):
+        #     # Check if a .swc file already exists for this neuron
+        #     file_path = os.path.join(self.mouselight_cache, neuron['idString']+".swc")
             
-            if not os.path.isfile(file_path): 
-                # Download and save as swc
-                # Get tracings by requests
-                axon_tracing, dendrite_tracing = None, None
-                if neuron['axon'] is not None:
-                    axon_tracing = get(url, neuron['axon'].id)
-                if neuron['dendrite'] is not None:
-                    dendrite_tracing = get(url, neuron['dendrite'].id)
+        #     if not os.path.isfile(file_path): 
+        #         # Download and save as swc
+        #         # Get tracings by requests
+        #         axon_tracing, dendrite_tracing = None, None
+        #         if neuron['axon'] is not None:
+        #             axon_tracing = get(url, neuron['axon'].id)
+        #         if neuron['dendrite'] is not None:
+        #             dendrite_tracing = get(url, neuron['dendrite'].id)
 
-                self.make_swc(neuron, file_path, axon_tracing=axon_tracing, dendrite_tracing=dendrite_tracing)
+        #         self.make_swc(neuron, file_path, axon_tracing=axon_tracing, dendrite_tracing=dendrite_tracing)
 
-            # Reconstruct from .swc
-            neurons.append(Neuron(file_path,))
+        #     # Reconstruct from .swc
+        #     neurons.append(Neuron(file_path,))
 
         return neurons
 
 
+
+
+
+
+
+"""
+Old code to fetch morphological data from mouselight database
+"""
+    # @staticmethod
+    # def make_json(neuron, file_path,  axon_tracing=None, dendrite_tracing=None):
+    #     """
+    #     Creates a .json file with the neuron's data that can be read by the mouselight parser.
+
+    #     :param neuron: dict with neuron's data
+    #     :param file_path: str, path where to save the json file
+    #     :param axon_tracing: list with data for axon tracing (Default value = None)
+    #     :param dendrite_tracing: list with data for dendrite tracing (Default value = None)
+
+    #     """
+    #     # parse axon
+    #     if axon_tracing is not None:
+    #         nodes = axon_tracing[0]['nodes']
+    #         axon = [
+    #             dict(
+    #                 sampleNumber = n['sampleNumber'],
+    #                 x = n['x'],
+    #                 y = n['y'],
+    #                 z = n['z'],
+    #                 radius = n['radius'],
+    #                 parentNumber = n['parentNumber'],
+    #             )
+    #             for n in nodes]
+    #     else:
+    #         axon = []
+
+    #     # parse dendrites
+    #     if dendrite_tracing is not None:
+    #         nodes = dendrite_tracing[0]['nodes']
+    #         dendrite = [
+    #             dict(
+    #                 sampleNumber = n['sampleNumber'],
+    #                 x = n['x'],
+    #                 y = n['y'],
+    #                 z = n['z'],
+    #                 radius = n['radius'],
+    #                 parentNumber = n['parentNumber'],
+    #             )
+    #             for n in nodes]
+    #     else:
+    #         dendrite = []
+
+    #     content = dict(
+    #         neurons = [
+    #             dict(
+    #                 idString = neuron['idString'],
+    #                 soma = dict(
+    #                     x = neuron['soma'].x,
+    #                     y = neuron['soma'].y,
+    #                     z = neuron['soma'].z,
+    #                 ),
+    #                 axon = axon, 
+    #                 dendrite = dendrite,
+
+    #             )
+    #         ]
+    #     )
+
+
+    #     # save to file
+    #     if not filepath.endswith('.json'):
+    #         raise ValueError(f'Invalid file path {filepath}')
+    #     with open(file_path, 'w') as f:
+    #         json.dump(content, f)
+
+    # @staticmethod
+    # def make_swc(neuron, file_path,  axon_tracing=None, dendrite_tracing=None):
+    #     """
+    #     Creates a .swc file with the neuron's data that can be read by the mouselight parser.
+
+    #     :param neuron: dict with neuron's data
+    #     :param file_path: str, path where to save the swc file
+    #     :param axon_tracing: list with data for axon tracing (Default value = None)
+    #     :param dendrite_tracing: list with data for dendrite tracing (Default value = None)
+
+    #     """
+
+    #     if not file_path.endswith('.swc'):
+    #         raise ValueError(f'Invalid file path {file_path}')
+
+    #     # parse data
+    #     if axon_tracing is not None:
+    #         nodes = axon_tracing[0]['nodes']
+    #         axon = [
+    #             dict(
+    #                 sampleNumber = n['sampleNumber'],
+    #                 x = n['x'],
+    #                 y = n['y'],
+    #                 z = n['z'],
+    #                 id = 2,
+    #                 radius = n['radius'],
+    #                 parentNumber = n['parentNumber'],
+    #             )
+    #             for n in nodes]
+    #     else:
+    #         axon = []
+
+    #     if dendrite_tracing is not None:
+    #         nodes = dendrite_tracing[0]['nodes']
+    #         dendrite = [
+    #             dict(
+    #                 sampleNumber = n['sampleNumber'],
+    #                 x = n['x'],
+    #                 y = n['y'],
+    #                 z = n['z'],
+    #                 radius = n['radius'],
+    #                 id = 3,
+    #                 parentNumber = n['parentNumber'],
+    #             )
+    #             for n in nodes]
+    #     else:
+    #         dendrite = []
+
+    #     # Save as swc
+    #     with open(file_path, 'w') as out:
+    #         out.write(f"# neuron: {neuron['idString']} downloaded from mouselight database [janelia campus]\n")
+    #         out.write("# .swc reconstructed using morphapi python package https://github.com/brainglobe/morphapi\n\n")
+    #         out.write("# id,type,x,y,z,r,pid\n")
+    #         out.write(f" 1 1 {neuron['soma'].x} "+
+    #                     f"{neuron['soma'].y} {neuron['soma'].z} "+
+    #                     f"{neuron['soma'].r} -1\n")
+
+
+    #         neurites = axon + dendrite
+    #         sort_idx = np.argsort([n['parentNumber'] for n in neurites])
+    #         neurites = list(np.array(neurites)[sort_idx])
+
+    #         for n in neurites:
+    #             if n['parentNumber'] == -1:
+    #                 pn = 1
+    #             else:
+    #                 pn = n['parentNumber']
+    #             out.write(f" {n['sampleNumber']} {n['id']} {n['x']} {n['y']} {n['z']} {n['radius']} {pn}\n")

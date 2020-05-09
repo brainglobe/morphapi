@@ -1,4 +1,10 @@
 # morphapi
+
+Please not that this package is currently **under development**. 
+Expect frequent changes and some bugs.
+
+
+
 ## Overview
 Morphapi is a lightweight python package for downloading neurons
 morphological reconstructions from publicly available datasets. 
