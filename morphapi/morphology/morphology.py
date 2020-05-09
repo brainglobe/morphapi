@@ -1,16 +1,18 @@
 import os
 from collections import namedtuple
+import numpy as np
 
 from vtkplotter.shapes import Sphere, Tube
 from vtkplotter import merge, write
+from vtkplotter.colors import colorMap
 
 import neurom as nm
 from neurom.core import iter_neurites, iter_segments, iter_sections
 from neurom.core.dataformat import COLS
 from neurom.morphmath import segment_radius
-from neurom.view.view import _get_line_width
+from neurom.view.view import _get_linewidth
 
-component = namedtuple("soma", "x y z coords radius component")
+component = namedtuple("component", "x y z coords radius component")
 
 class Neuron:
     _neurite_types = {'basal_dendrites':nm.core.types.NeuriteType.basal_dendrite, 
@@ -43,6 +45,39 @@ class Neuron:
             self.load_from_file()
 
 
+    def _parse_mesh_kwargs(self, **kwargs):
+        # To give the entire neuron the same color
+        neuron_color = kwargs.pop('neuron_color', None)
+
+        # To give the entire neuron a color based on a cmap 
+        neuron_number = kwargs.pop('neuron_number', None)
+        cmap_lims = kwargs.pop('cmap_lims', (-1, 1))
+        cmap = kwargs.pop('cmap', None)
+
+        # To color each component individually
+        soma_color = kwargs.pop('soma_color', 'salmon')
+        apical_dendrites_color = kwargs.pop('apical_dendrites_color', 'salmon')
+        basal_dendrites_color = kwargs.pop('basal_dendrites_color', apical_dendrites_color) 
+        axon_color = kwargs.pop('axon_color', 'salmon')
+        whole_neuron_color = kwargs.pop('whole_neuron_color', None)
+
+        # Get each components color from args
+        if neuron_color is not None:  # uniform color
+            soma_color = apical_dendrites_color = basal_dendrites_color = axon_color = neuron_color
+        elif cmap is not None:  # color according to cmap
+            if neuron_number is None:
+                neuron_number = 0
+            
+            soma_color = colorMap(neuron_number, name=cmap, vmin=cmap_lims[0], vmax=cmap_lims[1])
+            apical_dendrites_color = basal_dendrites_color = axon_color = soma_color
+
+        else: # Use color specified for each component
+            pass
+
+        if whole_neuron_color is None: whole_neuron_color = soma_color
+        return soma_color, apical_dendrites_color, basal_dendrites_color, axon_color, whole_neuron_color, kwargs
+
+
     def load_from_file(self):
         print('Loading neuron morphology data')
         if self.data_file_type is None:
@@ -70,42 +105,63 @@ class Neuron:
                                         for n in nrn.neurites if n.type == nclass]
 
 
-    def create_mesh(self, ):
+    def create_mesh(self, fixed_neurite_radius=False, **kwargs):
         if self.points is None:
             print('No data loaded, returning')
             return
 
+        # Parse kwargs
+        soma_color, apical_dendrites_color, basal_dendrites_color, \
+                    axon_color, whole_neuron_color, kwargs = \
+                                        self._parse_mesh_kwargs(**kwargs)
+
         # Create soma actor
-        soma = Sphere(pos=self.points['soma'].coords, r=self.points['soma'].radius)
+        neurites = {}
+        soma = Sphere(pos=self.points['soma'].coords, r=self.points['soma'].radius, c=soma_color)
+        neurites['soma'] = [soma.clone().c(soma_color)]
 
         # Create neurites actors
-        neurites = {}
         for ntype in self._neurite_types:
             actors = []
             for neurite in self.points[ntype]:
+                # Get tree segments
                 section_segment_list = [(section, segment)
                                                 for section in iter_sections(neurite.component)
                                                 for segment in iter_segments(section)]
                 segs = [(seg[0][COLS.XYZ], seg[1][COLS.XYZ]) for _, seg in section_segment_list]
 
-                radiuses = _get_linewidth(neurite.component, diameter_scale=1, linewidth=1)
-                # TODO create neurons better
+                # Get segments radius
+                if fixed_neurite_radius:
+                    if not isinstance(fixed_neurite_radius, (float , int)): 
+                        raise ValueError(f"When passsing fixed_neurite_radius it should be a number not: {fixed_neurite_radius.__type__}")
+                    radiuses = [self.points['soma'].radius * fixed_neurite_radius 
+                                            for i in np.arange(len(segs))]
+                else:
+                    radiuses = _get_linewidth(neurite.component, diameter_scale=1, linewidth=1)
+                    if not isinstance(radiuses, (tuple, list)): 
+                        radiuses = [radiuses for i in np.arange(len(segs))]
 
                 tubes = []
-                for seg in segs:
-                    rad = segment_radius(seg)
-
-
-
-                tree = [Tree(seg)]
-                actors.append(Tube(neurite.coords, r=neurite.radius))
+                for seg, rad in zip(segs, radiuses):
+                    tubes.append(Tube(seg, rad))
+                actors.append(merge([t.scale(1.05) for t in tubes]))
             neurites[ntype] = actors
 
-        actors = [act for actors in neurites.values() for act in actors] + [soma]
+        # Merge actors to get the entire neuron
+        actors = [act.clone() for actors in neurites.values() for act in actors] + [soma.clone()]
+        whole_neuron = merge(actors).clean().smoothMLS2D(f=0.1).c(whole_neuron_color)
 
-        whole_neuron = merge(actors)
+        # Color actors
+        [act.c(basal_dendrites_color) for act in neurites['basal_dendrites']]
+        [act.c(apical_dendrites_color) for act in neurites['apical_dendrites']]
+        [act.c(axon_color) for act in neurites['axon']]
+        
+        
+        
+        # TODO fix radii / smoothing
+        # TODO saving and styling actors
 
-        a = 1
+        return neurites, whole_neuron
 
 
 
@@ -113,4 +169,11 @@ class Neuron:
 
         
         
+if __name__ == "__main__":
+    fp = '/Users/federicoclaudi/Documents/Github/brainrenderscenes/morphologies/bailey/CNG version/Layer-2-3-Ethanol-7.CNG.swc'
+
+
+    neuro = Neuron(swc_file=fp)
+
+    neuro.create_mesh()
 
