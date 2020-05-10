@@ -130,7 +130,7 @@ class NeuroMorpOrgAPI(Paths):
             if _name is None: 
                 _name = 'neuromorpho_'
 
-            to_return.append(Neuron(filepath, neuron_name=_name+str(neuron['neuron_id'])))
+            to_return.append(Neuron(filepath, neuron_name=_name+str(neuron['neuron_id']), **kwargs))
             
         return to_return
 

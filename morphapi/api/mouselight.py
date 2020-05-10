@@ -381,7 +381,10 @@ class MouseLightAPI(Paths):
 
         neurons = []
         for neuron in tqdm(neurons_metadata):
-            neurons.append(nmapi.download_neurons(nmapi.get_neuron_by_name(neuron['idString']), _name='mouselight_'))
+
+            neurons.append(nmapi.download_neurons(nmapi.get_neuron_by_name(neuron['idString']), 
+                                    _name='mouselight_',
+                                    invert_dims=True))
 
         # ? Old code
         # def get(url, tracing_id): # send a query for a single tracing ID

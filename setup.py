@@ -19,7 +19,7 @@ requirements = [
 
 setup(
     name="morphapi",
-    version="0.0.6d",
+    version="0.0.7a",
     description="A lightweight python package to download neuronal morphologies",
     long_description=long_description,
     long_description_content_type="text/markdown",

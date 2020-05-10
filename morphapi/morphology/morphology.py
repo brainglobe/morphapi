@@ -23,8 +23,10 @@ class Neuron(NeuronCache):
 
     _ntypes = nm.core.types.NEURITES
 
-    def __init__(self, swc_file=None, json_file=None, neuron_name=None):
+    def __init__(self, swc_file=None, json_file=None, neuron_name=None, invert_dims=False):
         NeuronCache.__init__(self) # path to data caches
+
+        self.invert_dims = invert_dims
 
         # Parse agruments
         if swc_file is not None and json_file is not None:
@@ -110,6 +112,8 @@ class Neuron(NeuronCache):
         if whole_neuron_color is None: whole_neuron_color = soma_color
         return soma_color, apical_dendrites_color, basal_dendrites_color, axon_color, whole_neuron_color, kwargs
 
+
+
     def create_mesh(self, neurite_radius=2, **kwargs):
         if self.points is None:
             print('No data loaded, returning')
@@ -136,7 +140,14 @@ class Neuron(NeuronCache):
         else:
             # Create soma actor
             neurites = {}
-            soma = Sphere(pos=self.points['soma'].coords, r=self.points['soma'].radius, c=soma_color).computeNormals()
+            if not self.invert_dims:
+                coords = self.points['soma'].coords
+            else:
+                coords = self.points['soma'].coords
+                z, y, x = coords[0], coords[1], coords[2]
+                coords = np.hstack([x, y, z]).T
+            soma = Sphere(pos=coords, r=self.points['soma'].radius * neurite_radius * 2,
+                                        c=soma_color).computeNormals()
             neurites['soma'] = soma.clone().c(soma_color)
 
             # Create neurites actors
@@ -155,8 +166,20 @@ class Neuron(NeuronCache):
 
                     for section in iter_sections(neurite.component):
                         for child in section.children:
-                            actors.append(Tube(child.points[:, COLS.XYZ], r=neurite_radius).scale(1.05))                        
-
+                            if not child.children:
+                                coords = child.points[:, COLS.XYZ]
+                                if self.invert_dims:
+                                    z, y, x = coords[:, 0], coords[:, 1], coords[:, 2]
+                                    coords = np.hstack([x, y, z]).T
+                                actors.append(Tube(coords, r=neurite_radius).scale(1.05))                        
+                            else:
+                                for grandchild in child.children:
+                                    coords = grandchild.points[:, COLS.XYZ]
+                                    if self.invert_dims:
+                                        z, y, x = coords[:, 0], coords[:, 1], coords[:, 2]
+                                        coords = np.vstack([x, y, z]).T
+                                    actors.append(Tube(coords, r=neurite_radius).scale(1.05))     
+                                    
                     # actors.append(merge([t.scale(1.05) for t in tubes]))
 
                 if actors:
