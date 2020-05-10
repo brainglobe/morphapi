@@ -12,8 +12,7 @@ mlapi = MouseLightAPI()
 neurons_metadata = mlapi.fetch_neurons_metadata(filterby='soma', filter_regions=['MOs'])
 
 # Then we can download the files and save them as a .json file
-neurons_files =  mlapi.download_neurons(neurons_metadata[0]) # just saving the first couple neurons to speed things up
-
+neurons =  mlapi.download_neurons(neurons_metadata[0]) # just saving the first couple neurons to speed things up
 
 
 """

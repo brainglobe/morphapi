@@ -225,4 +225,5 @@ def is_any_item_in_list(L1, L2):
         return False
 
 
-
+def flatten_list(lst):
+	return [item for sublist in lst for item in sublist]

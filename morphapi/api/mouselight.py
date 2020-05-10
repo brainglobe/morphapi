@@ -11,7 +11,7 @@ from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
 from morphapi.morphology.morphology import Neuron
 from morphapi.utils.webqueries import post_mouselight, mouselight_base_url
 from morphapi.paths_manager import Paths
-from morphapi.utils.data_io import is_any_item_in_list
+from morphapi.utils.data_io import is_any_item_in_list, flatten_list
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 
 
@@ -425,7 +425,7 @@ class MouseLightAPI(Paths):
         #     # Reconstruct from .swc
         #     neurons.append(Neuron(file_path,))
 
-        return neurons
+        return flatten_list(neurons)
 
 
 
