@@ -1,5 +1,6 @@
 
 import os
+from tqdm import tqdm
 
 from morphapi.utils.webqueries import request, connected_to_internet
 from morphapi.paths_manager import Paths
@@ -92,7 +93,7 @@ class NeuroMorpOrgAPI(Paths):
         """
         return request(self._base_url+f'/name/{nname}').json()
 
-    def download_neurons(self, neurons, _name=None, **kwargs):
+    def download_neurons(self, neurons, _name=None, verbose=True, **kwargs):
         """
             Downloads neuronal morphological data and saves it to .swc files. 
             It then returns a list of Neuron instances with morphological data for each neuron.
@@ -106,7 +107,8 @@ class NeuroMorpOrgAPI(Paths):
             neurons  = [neurons]
         
         to_return = []
-        for neuron in neurons:
+        if verbose: print('Downloading neurons')
+        for neuron in tqdm(neurons, disable=not verbose):
 
             if not isinstance(neuron, dict):
                 raise ValueError()

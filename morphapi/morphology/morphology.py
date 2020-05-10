@@ -13,6 +13,7 @@ from neurom.morphmath import segment_radius
 from neurom.view.view import _get_linewidth
 
 from morphapi.morphology.cache import NeuronCache
+from morphapi.utils.data_io import get_file_name
 
 component = namedtuple("component", "x y z coords radius component")
 
@@ -154,16 +155,6 @@ class Neuron(NeuronCache):
             for ntype in self._neurite_types:
                 actors = []
                 for neurite in self.points[ntype]:
-                    # Get tree segments
-                    # section_segment_list = [(section, segment)
-                    #                                 for section in iter_sections(neurite.component)
-                    #                                 for segment in iter_segments(section)]
-                    # segs = [(seg[0][COLS.XYZ], seg[1][COLS.XYZ]) for _, seg in section_segment_list]
-
-                    # tubes = []
-                    # for seg in segs:
-                    #     tubes.append(Tube(seg, neurite_radius))
-
                     for section in iter_sections(neurite.component):
                         for child in section.children:
                             if not child.children:
@@ -171,16 +162,14 @@ class Neuron(NeuronCache):
                                 if self.invert_dims:
                                     z, y, x = coords[:, 0], coords[:, 1], coords[:, 2]
                                     coords = np.hstack([x, y, z]).T
-                                actors.append(Tube(coords, r=neurite_radius).scale(1.05))                        
+                                actors.append(Tube(coords, r=neurite_radius))                        
                             else:
                                 for grandchild in child.children:
                                     coords = grandchild.points[:, COLS.XYZ]
                                     if self.invert_dims:
                                         z, y, x = coords[:, 0], coords[:, 1], coords[:, 2]
                                         coords = np.vstack([x, y, z]).T
-                                    actors.append(Tube(coords, r=neurite_radius).scale(1.05))     
-                                    
-                    # actors.append(merge([t.scale(1.05) for t in tubes]))
+                                    actors.append(Tube(coords, r=neurite_radius))     
 
                 if actors:
                     neurites[ntype] = merge(actors).computeNormals() # .smoothMLS2D(f=0.1)
@@ -202,4 +191,5 @@ class Neuron(NeuronCache):
             if neurites[key] is not None:
                 neurites[key] = neurites[key].c(colors[n])
         whole_neuron.c(whole_neuron_color)
+
         return neurites, whole_neuron

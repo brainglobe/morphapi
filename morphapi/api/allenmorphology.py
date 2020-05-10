@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import numpy as np
 from collections import namedtuple
+from tqdm import tqdm
 
 from vtkplotter import shapes, load, merge
 
@@ -63,7 +64,8 @@ class AllenMorphology(Paths):
 		if not isinstance(ids, (list)): ids = [ids]
 
 		neurons = []
-		for neuron_id in ids:
+		print('Downloading neurons')
+		for neuron_id in tqdm(ids):
 			neuron_file = os.path.join(self.allen_morphology_cache, "{}.swc".format(neuron_id))
 
 			# Download file 
