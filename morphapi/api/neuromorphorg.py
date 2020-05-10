@@ -9,6 +9,8 @@ from morphapi.morphology.morphology import Neuron
 class NeuroMorpOrgAPI(Paths):
     _base_url = 'http://neuromorpho.org/api/neuron'
 
+    _version = 'CNG version' # which swc version, standardized or original
+
     def __init__(self, *args, **kwargs):
         if not connected_to_internet():
             raise ConnectionError("You will need to be connected to the internet to use the NeuroMorpOrgAPI class to download neurons")
@@ -113,7 +115,7 @@ class NeuroMorpOrgAPI(Paths):
 
             if not os.path.isfile(filepath):
                 # Download and write to file
-                url = f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/CNG version/{neuron['neuron_name']}.CNG.swc"
+                url = f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/{self.version}/{neuron['neuron_name']}.CNG.swc"
 
                 req = request(url)
                 if not req.ok:

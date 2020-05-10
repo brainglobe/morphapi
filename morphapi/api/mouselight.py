@@ -377,6 +377,7 @@ class MouseLightAPI(Paths):
         if not isinstance(neurons_metadata, (list, tuple)):
             neurons_metadata = [neurons_metadata]
         nmapi = NeuroMorpOrgAPI()
+        nmapi._version = 'Source-Version'
 
         neurons = []
         for neuron in tqdm(neurons_metadata):
