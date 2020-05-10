@@ -15,8 +15,10 @@ default_paths = dict(
         mouselight_cache = 'Data/mouselight_cache',
         neuromorphorg_cache = 'Data/neuromorphorg_cache',
 
+        meshes_cache = 'Data/meshes_cache',
+
         # Other
-        mouse_connectivity_cache = 'Data/mouse_connectivity_cache'
+        mouse_connectivity_cache = 'Data/mouse_connectivity_cache',
 )
 
 
@@ -25,6 +27,7 @@ class Paths:
                 "mouselight_cache", 
                 "neuromorphorg_cache",
                 'mouse_connectivity_cache', 
+                'meshes_cache'
                 ]
 
     def __init__(self, base_dir=None, **kwargs):

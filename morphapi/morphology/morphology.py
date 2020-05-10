@@ -12,16 +12,20 @@ from neurom.core.dataformat import COLS
 from neurom.morphmath import segment_radius
 from neurom.view.view import _get_linewidth
 
+from morphapi.morphology.cache import NeuronCache
+
 component = namedtuple("component", "x y z coords radius component")
 
-class Neuron:
+class Neuron(NeuronCache):
     _neurite_types = {'basal_dendrites':nm.core.types.NeuriteType.basal_dendrite, 
                         'apical_dendrites':nm.core.types.NeuriteType.apical_dendrite, 
                         'axon':nm.core.types.NeuriteType.axon}
 
     _ntypes = nm.core.types.NEURITES
 
-    def __init__(self, swc_file=None, json_file=None):
+    def __init__(self, swc_file=None, json_file=None, neuron_name=None):
+        NeuronCache.__init__(self) # path to data caches
+
         # Parse agruments
         if swc_file is not None and json_file is not None:
             raise ValueError('Pass eithr swc or json file, not both')
@@ -41,9 +45,38 @@ class Neuron:
             self.morphology = None
             self.points = None
 
+        self.neuron_name = neuron_name
+
         if self.data_file is not None:
             self.load_from_file()
 
+    def load_from_file(self):
+        if self.data_file_type is None:
+            return
+        elif self.data_file_type == 'json':
+            raise NotImplementedError
+        else:
+            self.load_from_swc()
+
+    def load_from_swc(self):
+        if self.neuron_name is None:
+            self.neuron_name = get_file_name(self.data_file)
+
+        nrn = nm.load_neuron(self.data_file)
+
+        # Get position and radius of some
+        soma_pos = nrn.soma.points[0, :3]
+        soma_radius = nrn.soma.points[0, -1]
+
+        # Get the rest of the data and store it
+        self.morphology = nrn
+        self.points = dict(
+            soma=component(soma_pos[0], soma_pos[1], soma_pos[2], soma_pos, soma_radius, nrn.soma),
+            )
+
+        for ntype, nclass in self._neurite_types.items():
+            self.points[ntype] = [component(n.points[:, 0], n.points[:, 1], n.points[:, 2], n.points[:, :3], n.points[:, -1], n) 
+                                        for n in nrn.neurites if n.type == nclass]
 
     def _parse_mesh_kwargs(self, **kwargs):
         # To give the entire neuron the same color
@@ -77,34 +110,7 @@ class Neuron:
         if whole_neuron_color is None: whole_neuron_color = soma_color
         return soma_color, apical_dendrites_color, basal_dendrites_color, axon_color, whole_neuron_color, kwargs
 
-
-    def load_from_file(self):
-        if self.data_file_type is None:
-            return
-        elif self.data_file_type == 'json':
-            raise NotImplementedError
-        else:
-            self.load_from_swc()
-
-    def load_from_swc(self):
-        nrn = nm.load_neuron(self.data_file)
-
-        # Get position and radius of some
-        soma_pos = nrn.soma.points[0, :3]
-        soma_radius = nrn.soma.points[0, -1]
-
-        # Get the rest of the data and store it
-        self.morphology = nrn
-        self.points = dict(
-            soma=component(soma_pos[0], soma_pos[1], soma_pos[2], soma_pos, soma_radius, nrn.soma),
-            )
-
-        for ntype, nclass in self._neurite_types.items():
-            self.points[ntype] = [component(n.points[:, 0], n.points[:, 1], n.points[:, 2], n.points[:, :3], n.points[:, -1], n) 
-                                        for n in nrn.neurites if n.type == nclass]
-
-
-    def create_mesh(self, fixed_neurite_radius=False, **kwargs):
+    def create_mesh(self, neurite_radius=2, **kwargs):
         if self.points is None:
             print('No data loaded, returning')
             return
@@ -114,50 +120,63 @@ class Neuron:
                     axon_color, whole_neuron_color, kwargs = \
                                         self._parse_mesh_kwargs(**kwargs)
 
-        if fixed_neurite_radius is None: fixed_neurite_radius = False
-        if fixed_neurite_radius:
-            if not isinstance(fixed_neurite_radius, (int, float)) or not fixed_neurite_radius > 0:
-                raise ValueError(f'Invalid value for parameter fixed_neurite_radius, should be a float > 0')
+        if not isinstance(neurite_radius, (int, float)) or not neurite_radius > 0:
+            raise ValueError(f'Invalid value for parameter neurite_radius, should be a float > 0')
 
-        # Create soma actor
-        neurites = {}
-        soma = Sphere(pos=self.points['soma'].coords, r=self.points['soma'].radius, c=soma_color)
-        neurites['soma'] = [soma.clone().c(soma_color)]
+        # prepare params dict for caching
+        _params = dict(
+            neurite_radius = neurite_radius,
+        )
 
-        # Create neurites actors
-        for ntype in self._neurite_types:
-            actors = []
-            for neurite in self.points[ntype]:
-                # Get tree segments
-                section_segment_list = [(section, segment)
-                                                for section in iter_sections(neurite.component)
-                                                for segment in iter_segments(section)]
-                segs = [(seg[0][COLS.XYZ], seg[1][COLS.XYZ]) for _, seg in section_segment_list]
+        # Check if cached files already exist
+        neurites = self.load_cached_neuron(self.neuron_name, _params)
+        if neurites is not None:
+            whole_neuron = neurites.pop('whole_neuron')
+            neurites['soma'].c(soma_color)
+        else:
+            # Create soma actor
+            neurites = {}
+            soma = Sphere(pos=self.points['soma'].coords, r=self.points['soma'].radius, c=soma_color).computeNormals()
+            neurites['soma'] = soma.clone().c(soma_color)
 
-                # Get segments radius
-                if fixed_neurite_radius:
-                    if not isinstance(fixed_neurite_radius, (float , int)): 
-                        raise ValueError(f"When passsing fixed_neurite_radius it should be a number not: {fixed_neurite_radius.__type__}")
-                    radiuses = [self.points['soma'].radius * fixed_neurite_radius 
-                                            for i in np.arange(len(segs))]
+            # Create neurites actors
+            for ntype in self._neurite_types:
+                actors = []
+                for neurite in self.points[ntype]:
+                    # Get tree segments
+                    # section_segment_list = [(section, segment)
+                    #                                 for section in iter_sections(neurite.component)
+                    #                                 for segment in iter_segments(section)]
+                    # segs = [(seg[0][COLS.XYZ], seg[1][COLS.XYZ]) for _, seg in section_segment_list]
+
+                    # tubes = []
+                    # for seg in segs:
+                    #     tubes.append(Tube(seg, neurite_radius))
+
+                    for section in iter_sections(neurite.component):
+                        for child in section.children:
+                            actors.append(Tube(child.points[:, COLS.XYZ], r=neurite_radius).scale(1.05))                        
+
+                    # actors.append(merge([t.scale(1.05) for t in tubes]))
+
+                if actors:
+                    neurites[ntype] = merge(actors).computeNormals() # .smoothMLS2D(f=0.1)
                 else:
-                    radiuses = _get_linewidth(neurite.component, diameter_scale=1, linewidth=1)
-                    if not isinstance(radiuses, (tuple, list)): 
-                        radiuses = [radiuses for i in np.arange(len(segs))]
+                    neurites[ntype] = None
 
-                tubes = []
-                for seg, rad in zip(segs, radiuses):
-                    tubes.append(Tube(seg, rad))
-                actors.append(merge([t.scale(1.05) for t in tubes]))
-            neurites[ntype] = actors
+            # Merge actors to get the entire neuron
+            actors = [act.clone() for act in neurites.values() if act is not None] 
+            whole_neuron = merge(actors).clean().computeNormals()
 
-        # Merge actors to get the entire neuron
-        actors = [act.clone() for actors in neurites.values() for act in actors] + [soma.clone()]
-        whole_neuron = merge(actors).clean().smoothMLS2D(f=0.1).c(whole_neuron_color)
+            # Write to cache
+            to_write = neurites.copy()
+            to_write['whole_neuron'] = whole_neuron
+            self.write_neuron_to_cache(self.neuron_name, to_write, _params)
 
         # Color actors
-        [act.c(basal_dendrites_color) for act in neurites['basal_dendrites']]
-        [act.c(apical_dendrites_color) for act in neurites['apical_dendrites']]
-        [act.c(axon_color) for act in neurites['axon']]
-
+        colors = [basal_dendrites_color, apical_dendrites_color, axon_color]
+        for n, key in enumerate(['basal_dendrites', 'apical_dendrites', 'axon']):
+            if neurites[key] is not None:
+                neurites[key] = neurites[key].c(colors[n])
+        whole_neuron.c(whole_neuron_color)
         return neurites, whole_neuron

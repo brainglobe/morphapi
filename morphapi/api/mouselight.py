@@ -364,7 +364,7 @@ class MouseLightAPI(Paths):
         return neurons
 
 
-    def download_neurons(self, neurons_metadata):
+    def download_neurons(self, neurons_metadata, **kwargs):
         """
         Given a list of neurons metadata from self.fetch_neurons_metadata
         this funcition downloads the morphological data.
@@ -380,7 +380,7 @@ class MouseLightAPI(Paths):
 
         neurons = []
         for neuron in tqdm(neurons_metadata):
-            neurons.append(nmapi.download_neurons(nmapi.get_neuron_by_name(neuron['idString'])))
+            neurons.append(nmapi.download_neurons(nmapi.get_neuron_by_name(neuron['idString']), _name='mouselight_'))
 
         # ? Old code
         # def get(url, tracing_id): # send a query for a single tracing ID

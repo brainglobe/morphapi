@@ -80,8 +80,8 @@ def save_yaml(filepath, content, append=False, topcomment=None):
 	:param content: dictionary of stuff to save
 
 	"""
-	if not 'yaml' in filepath:
-		raise ValueError("filepath is invalid")
+	if not filepath.endswith('.yaml') and not filepath.endswith('.yml'):
+		raise ValueError(f"filepath is invalid {filepath}. Should end with yaml or yml")
 
 	if not append:
 		method = 'w'

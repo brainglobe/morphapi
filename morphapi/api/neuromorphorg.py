@@ -90,19 +90,22 @@ class NeuroMorpOrgAPI(Paths):
         """
         return request(self._base_url+f'/name/{nname}').json()
 
-    def download_neurons(self, neurons):
+    def download_neurons(self, neurons, _name=None, **kwargs):
         """
             Downloads neuronal morphological data and saves it to .swc files. 
             It then returns a list of Neuron instances with morphological data for each neuron.
 
             :param neurons: list of neurons metadata (as returned by one of the functions
                         used to fetch metadata)
+            :param _name: used internally to save cached neurons with a different prefix when the 
+                    class is used to download neurons for other APIs
         """
         if not isinstance(neurons, (list, tuple)):
             neurons  = [neurons]
         
         to_return = []
         for neuron in neurons:
+
             if not isinstance(neuron, dict):
                 raise ValueError()
 
@@ -119,9 +122,13 @@ class NeuroMorpOrgAPI(Paths):
                 with open(filepath, 'w') as f:
                     f.write(req.content.decode('utf-8'))
 
-            to_return.append(Neuron(filepath))
+            if _name is None: 
+                _name = 'neuromorpho_'
+
+            to_return.append(Neuron(filepath, neuron_name=_name+str(neuron['neuron_id'])))
             
         return to_return
 
 
 
+# TODO fix bug with caching paths and finish brainrender update

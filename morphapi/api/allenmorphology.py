@@ -70,6 +70,6 @@ class AllenMorphology(Paths):
 			self.ctc.get_reconstruction(neuron_id, file_name=neuron_file)
 
 			# Reconstruct neuron
-			neurons.append(Neuron(neuron_file, **kwargs))
+			neurons.append(Neuron(neuron_file, neuron_name=str(neuron_id),  **kwargs))
 		
 		return neurons
