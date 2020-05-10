@@ -24,7 +24,7 @@ def request(url):
 		return response
 	else:
 		exception_string = 'URL request failed: {}'.format(response.reason)
-	raise ValueError(exception_string)
+	raise ValueError(exception_string+f'url: {url}')
 
 def query_mouselight(query):
 	"""

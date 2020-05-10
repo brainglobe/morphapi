@@ -115,7 +115,10 @@ class NeuroMorpOrgAPI(Paths):
 
             if not os.path.isfile(filepath):
                 # Download and write to file
-                url = f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/{self.version}/{neuron['neuron_name']}.CNG.swc"
+                if self._version == 'CNG version':
+                    url = f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/CNG version/{neuron['neuron_name']}.CNG.swc"
+                else:
+                    url = f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/{self._version}/{neuron['neuron_name']}.swc"
 
                 req = request(url)
                 if not req.ok:
@@ -133,4 +136,3 @@ class NeuroMorpOrgAPI(Paths):
 
 
 
-# TODO fix bug with caching paths and finish brainrender update
