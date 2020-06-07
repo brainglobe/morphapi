@@ -1,5 +1,9 @@
+import sys
+
+sys.path.append("./")
 from morphapi.api.mouselight import MouseLightAPI
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
+from morphapi.api.allenmorphology import AllenMorphology
 
 
 def test_neuromorpho_download():
@@ -35,5 +39,15 @@ def test_mouselight_download():
 
 
 def test_allen_morphology_download():
-    # TODO
-    pass
+    am = AllenMorphology()
+
+    # Select some mouse neurons in the primary visual cortex
+    neurons = am.neurons.loc[
+        (am.neurons.species == "Mus musculus")
+        & (am.neurons.structure_area_abbrev == "VISp")
+    ]
+
+    # Download some neurons
+    neurons = am.download_neurons(neurons.sample(5).id.values)
+
+    neurons = [neuron.create_mesh()[1] for neuron in neurons]

@@ -14,6 +14,9 @@ from neurom.core.dataformat import COLS
 from morphapi.morphology.cache import NeuronCache
 from morphapi.utils.data_io import get_file_name
 
+import warnings
+
+warnings.filterwarnings("ignore")
 
 component = namedtuple("component", "x y z coords radius component")
 
@@ -157,7 +160,7 @@ class Neuron(NeuronCache):
             kwargs,
         )
 
-    def create_mesh(self, neurite_radius=2, **kwargs):
+    def create_mesh(self, neurite_radius=2, use_cache=True, **kwargs):
         if self.points is None:
             print("No data loaded, returning")
             return
@@ -184,7 +187,12 @@ class Neuron(NeuronCache):
         _params = dict(neurite_radius=neurite_radius,)
 
         # Check if cached files already exist
-        neurites = self.load_cached_neuron(self.neuron_name, _params)
+        if use_cache:
+            neurites = self.load_cached_neuron(self.neuron_name, _params)
+        else:
+            neurites = None
+
+        # Render
         if neurites is not None:
             whole_neuron = neurites.pop("whole_neuron")
             neurites["soma"].c(soma_color)
@@ -198,9 +206,7 @@ class Neuron(NeuronCache):
                 z, y, x = coords[0], coords[1], coords[2]
                 coords = np.hstack([x, y, z]).T
             soma = Sphere(
-                pos=coords,
-                r=self.points["soma"].radius * neurite_radius * 2,
-                c=soma_color,
+                pos=coords, r=self.points["soma"].radius * 2, c=soma_color,
             ).computeNormals()
             neurites["soma"] = soma.clone().c(soma_color)
 
