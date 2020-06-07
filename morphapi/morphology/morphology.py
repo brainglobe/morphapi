@@ -75,10 +75,35 @@ class Neuron(NeuronCache):
         else:
             self.load_from_swc()
 
+    def repair_swc_file(self):
+        """ 
+            Fixes this: https://github.com/BlueBrain/NeuroM/issues/835
+        """
+        with open(self.data_file, "r") as read:
+            content = read.readlines()
+
+        clean = []
+        for line in content:
+            line = line.replace("\n", "").replace("\t", " ")
+            vals = line.split(" ")
+            if vals[1] != "1" and vals[-1] == "-1":
+                vals[-1] = "0"
+                clean.append(" ".join(vals))
+            else:
+                clean.append(line)
+
+        if len(clean) != len(content):
+            raise ValueError
+
+        with open(self.data_file, "w") as write:
+            for line in clean:
+                write.write(f"{line}\n")
+
     def load_from_swc(self):
         if self.neuron_name is None:
             self.neuron_name = get_file_name(self.data_file)
 
+        self.repair_swc_file()
         nrn = nm.load_neuron(self.data_file)
 
         # Get position and radius of some
@@ -160,7 +185,9 @@ class Neuron(NeuronCache):
             kwargs,
         )
 
-    def create_mesh(self, neurite_radius=2, use_cache=True, **kwargs):
+    def create_mesh(
+        self, neurite_radius=2, soma_radius=4, use_cache=True, **kwargs
+    ):
         if self.points is None:
             print("No data loaded, returning")
             return
@@ -205,8 +232,11 @@ class Neuron(NeuronCache):
                 coords = self.points["soma"].coords
                 z, y, x = coords[0], coords[1], coords[2]
                 coords = np.hstack([x, y, z]).T
+
             soma = Sphere(
-                pos=coords, r=self.points["soma"].radius * 2, c=soma_color,
+                pos=coords,
+                r=self.points["soma"].radius * soma_radius,
+                c=soma_color,
             ).computeNormals()
             neurites["soma"] = soma.clone().c(soma_color)
 
