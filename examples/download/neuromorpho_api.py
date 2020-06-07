@@ -21,9 +21,7 @@ print("Neurons metadata:")
 print(metadata[0])
 
 # ---------------------------- Download morphology --------------------------- #
-neurons = api.download_neurons(
-    metadata[5]
-)  # Render only one neuron to speed things up.
+neurons = api.download_neurons(metadata[5])
 
 
 # ------------------------------- Visualisation ------------------------------ #
