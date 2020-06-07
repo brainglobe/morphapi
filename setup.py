@@ -31,11 +31,13 @@ setup(
             "pytest",
             "coveralls",
             "coverage<=4.5.4",
-        ]
+            "pytest-sugar",
+        ],
     },
     python_requires=">=3.6, <3.8",
-    packages=find_namespace_packages(exclude=(
-        "Installation", "Meshes", "Metadata", "Screenshots")),
+    packages=find_namespace_packages(
+        exclude=("Installation", "Meshes", "Metadata", "Screenshots")
+    ),
     include_package_data=True,
     url="https://github.com/brainglobe/morphapi",
     author="Federico Claudi",

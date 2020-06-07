@@ -1,18 +1,18 @@
 from vtkplotter import Plotter
 
-from morphapi.morphology.morphology import Neuron
-from morphapi.api.mouselight import MouseLightAPI, mouselight_structures_identifiers
-
+from morphapi.api.mouselight import MouseLightAPI
 
 
 # ---------------------------- Downloading neurons --------------------------- #
 mlapi = MouseLightAPI()
 
 # Fetch metadata for neurons with some in the secondary motor cortex
-neurons_metadata = mlapi.fetch_neurons_metadata(filterby='soma', filter_regions=['MOs'])
+neurons_metadata = mlapi.fetch_neurons_metadata(
+    filterby="soma", filter_regions=["MOs"]
+)
 
 # Then we can download the files and save them as a .json file
-neurons =  mlapi.download_neurons(neurons_metadata[0])
+neurons = mlapi.download_neurons(neurons_metadata[0])
 
 
 """
@@ -22,10 +22,10 @@ neurons =  mlapi.download_neurons(neurons_metadata[0])
 
 
 # ------------------------------- Visualisation ------------------------------ #
-print('creating meshes')
+print("creating meshes")
 neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
-print('visualizing')
+print("visualizing")
 vp = Plotter(shape=(1, len(neurons)), axes=1)
 
 vp.show(neurons)
