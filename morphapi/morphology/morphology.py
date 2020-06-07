@@ -84,8 +84,16 @@ class Neuron(NeuronCache):
 
         clean = []
         for line in content:
+            if not len(line):
+                clean.append(line)
+                continue
+
             line = line.replace("\n", "").replace("\t", " ")
             vals = line.split(" ")
+            if len(vals) < 2:
+                clean.append(line)
+                continue
+
             if vals[1] != "1" and vals[-1] == "-1":
                 vals[-1] = "0"
                 clean.append(" ".join(vals))
@@ -209,7 +217,10 @@ class Neuron(NeuronCache):
             raise ValueError(
                 f"Invalid value for parameter neurite_radius, should be a float > 0"
             )
-
+        if not isinstance(soma_radius, (int, float)) or not soma_radius > 0:
+            raise ValueError(
+                f"Invalid value for parameter soma_radius, should be a float > 0"
+            )
         # prepare params dict for caching
         _params = dict(neurite_radius=neurite_radius, soma_radius=soma_radius)
 
