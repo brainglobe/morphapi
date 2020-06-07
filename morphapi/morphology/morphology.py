@@ -14,6 +14,7 @@ from neurom.core.dataformat import COLS
 from morphapi.morphology.cache import NeuronCache
 from morphapi.utils.data_io import get_file_name
 
+
 component = namedtuple("component", "x y z coords radius component")
 
 
