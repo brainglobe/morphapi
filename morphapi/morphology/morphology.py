@@ -211,7 +211,7 @@ class Neuron(NeuronCache):
             )
 
         # prepare params dict for caching
-        _params = dict(neurite_radius=neurite_radius,)
+        _params = dict(neurite_radius=neurite_radius, soma_radius=soma_radius)
 
         # Check if cached files already exist
         if use_cache:

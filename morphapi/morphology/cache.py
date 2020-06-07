@@ -50,7 +50,10 @@ class NeuronCache(Paths):
 
         # Check if params are the same as when cached
         cached_params = load_yaml(self.get_cache_params_filename(neuron_name))
-        changed = {v for k, v in _params.items() if v != cached_params[k]}
+        if len(cached_params) != len(_params):
+            changed = cached_params.values()
+        else:
+            changed = {v for k, v in _params.items() if v != cached_params[k]}
         if changed:
             return None
 
