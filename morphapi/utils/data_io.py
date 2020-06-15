@@ -5,7 +5,7 @@ import yaml
 import gzip
 import numpy as np
 from brainio import brainio
-from vtkplotter import load, Volume
+from vedo import load, Volume
 
 
 def listdir(fld):

@@ -1,6 +1,6 @@
 import os
 
-from vtkplotter import write, load, Mesh, merge
+from vedo import write, load, Mesh, merge
 
 from morphapi.paths_manager import Paths
 from morphapi.utils.data_io import save_yaml, load_yaml

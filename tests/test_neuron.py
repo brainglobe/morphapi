@@ -7,7 +7,7 @@ import numpy as np
 from random import choice
 from morphapi.morphology.morphology import Neuron
 from morphapi.utils.data_io import listdir
-from vtkplotter import Mesh
+from vedo import Mesh
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ args = [
 def test_create_mesh(neuron, radius, soma, apical, basal, axon, whole, cache):
     components, neuron = neuron.create_mesh(
         neurite_radius=radius,  #
-        soma_color=soma,  # Specify colors [see vtkplotter.colors for more details]
+        soma_color=soma,  # Specify colors [see vedo.colors for more details]
         apical_dendrites_color=apical,
         basal_dendrites_color=basal,
         axon_color=axon,

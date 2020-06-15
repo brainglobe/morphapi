@@ -1,4 +1,4 @@
-from vtkplotter import Plotter
+from vedo import Plotter
 
 from morphapi.api.mouselight import MouseLightAPI
 

@@ -2,9 +2,9 @@ import os
 from collections import namedtuple
 import numpy as np
 
-from vtkplotter.shapes import Sphere, Tube
-from vtkplotter import merge
-from vtkplotter.colors import colorMap
+from vedo.shapes import Sphere, Tube
+from vedo import merge
+from vedo.colors import colorMap
 
 import neurom as nm
 from neurom.core import iter_sections

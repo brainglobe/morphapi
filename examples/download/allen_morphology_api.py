@@ -1,5 +1,5 @@
 from morphapi.api.allenmorphology import AllenMorphology
-from vtkplotter import Plotter
+from vedo import Plotter
 
 am = AllenMorphology()
 

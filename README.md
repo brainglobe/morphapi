@@ -16,7 +16,7 @@ Neuromorph api can be used to download data from the following sources:
 
 Neuromorph relies on the [`neurom`](https://zenodo.org/record/209498#.XraWUsZ7l24) package from
 the BlueBrain project ([github](https://github.com/BlueBrain/NeuroM)) to reconstruct morphology
-from `.swc` files and on [`vtkplotter`](https://github.com/marcomusy/vtkplotter) to create 3d
+from `.swc` files and on [`vedo`](https://github.com/marcomusy/vedo) to create 3d
 rendering from morphological data.
 
 ![](media/exampleneuron.png)
@@ -53,5 +53,5 @@ Keep in mind though that [brainrender](https://github.com/BrancoLab/BrainRender)
 
 ## References
 * Juan Palacios, lidakanari, Eleftherios Zisis, MikeG, Liesbeth Vanherpe, Jean-Denis Courcol, & Oren Amsalem. (2016, December 19). BlueBrain/NeuroM: v1.2.0 (Version v1.2.0). Zenodo. http://doi.org/10.5281/zenodo.209498
-* M. Musy et al. "vtkplotter, a python module for scientific visualization and analysis of 3D objects and point clouds based on VTK (Visualization Toolkit)", Zenodo, 10 February 2019, doi: 10.5281/zenodo.2561402.
+* M. Musy et al. "vedo, a python module for scientific visualization and analysis of 3D objects and point clouds based on VTK (Visualization Toolkit)", Zenodo, 10 February 2019, doi: 10.5281/zenodo.2561402.
 *  Winnubst, J. et al. (2019) Reconstruction of 1,000 Projection Neurons Reveals New Cell Types and Organization of Long-Range Connectivity in the Mouse Brain, Cell 179: 268-281
