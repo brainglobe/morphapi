@@ -112,7 +112,10 @@ class Neuron(NeuronCache):
             self.neuron_name = get_file_name(self.data_file)
 
         self.repair_swc_file()
-        nrn = nm.load_neuron(self.data_file)
+        try:
+            nrn = nm.load_neuron(self.data_file)
+        except  Exception as e:
+            raise ValueError(f'Failed to load swc from {self.data_file}.\n Error: {e}')
 
         # Get position and radius of some
         soma_pos = nrn.soma.points[0, :3]

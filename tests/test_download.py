@@ -48,6 +48,6 @@ def test_allen_morphology_download():
     ]
 
     # Download some neurons
-    neurons = am.download_neurons(neurons.sample(5).id.values)
+    neurons = am.download_neurons(neurons.sample(3).id.values)
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
