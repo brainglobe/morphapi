@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from collections import namedtuple
 import numpy as np
 
@@ -32,40 +33,24 @@ class Neuron(NeuronCache):
 
     def __init__(
         self,
-        swc_file=None,
-        json_file=None,
+        data_file=None,
         neuron_name=None,
         invert_dims=False,
     ):
-        NeuronCache.__init__(self)  # path to data caches
+        super().__init__(self)  # path to data caches
 
         self.invert_dims = invert_dims
-
-        # Parse agruments
-        if swc_file is not None and json_file is not None:
-            raise ValueError("Pass eithr swc or json file, not both")
-        elif swc_file is not None:
-            if not os.path.exists(swc_file) or not swc_file.endswith(".swc"):
-                raise ValueError(f"Invalid swc file: {swc_file}")
-            self.data_file = swc_file
-            self.data_file_type = "swc"
-        elif json_file is not None:
-            if not os.path.exists(json_file) or not json_file.endswith(
-                ".json"
-            ):
-                raise ValueError(f"Invalid json file: {json_file}")
-            self.data_file = json_file
-            self.data_file_type = "json"
-        else:
-            self.data_file = None
-            self.data_file_type = None
-            self.morphology = None
-            self.points = None
-
         self.neuron_name = neuron_name
 
-        if self.data_file is not None:
-            self.load_from_file()
+        self.data_file = Path(data_file)
+        if not self.data_file.exists():
+            raise ValueError("The specified path does not exist!")
+        self.data_file_type = self.data_file.suffix[1:]
+
+        if self.data_file_type not in ["swc", "json"]:
+            raise ValueError("Invalid data file type, should be swc or jon")
+
+        self.load_from_file()
 
     def load_from_file(self):
         if self.data_file_type is None:
@@ -109,13 +94,11 @@ class Neuron(NeuronCache):
 
     def load_from_swc(self):
         if self.neuron_name is None:
-            self.neuron_name = get_file_name(self.data_file)
+            self.neuron_name = self.data_file.name
 
         self.repair_swc_file()
-        try:
-            nrn = nm.load_neuron(self.data_file)
-        except  Exception as e:
-            raise ValueError(f'Failed to load swc from {self.data_file}.\n Error: {e}')
+
+        nrn = nm.load_neuron(self.data_file)
 
         # Get position and radius of some
         soma_pos = nrn.soma.points[0, :3]

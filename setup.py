@@ -15,6 +15,7 @@ requirements = [
     "pyyaml>=5.3",
     "scikit-image",
     "neurom",
+    "bg_atlasapi"
 ]
 
 setup(
@@ -34,7 +35,7 @@ setup(
             "pytest-sugar",
         ],
     },
-    python_requires=">=3.6, <3.8",
+    python_requires=">=3.6",
     packages=find_namespace_packages(
         exclude=("Installation", "Meshes", "Metadata", "Screenshots")
     ),
