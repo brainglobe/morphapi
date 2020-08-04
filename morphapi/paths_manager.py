@@ -20,14 +20,6 @@ default_paths = dict(
 
 
 class Paths:
-    _folders = [
-        "allen_morphology_cache",
-        "mouselight_cache",
-        "neuromorphorg_cache",
-        "mouse_connectivity_cache",
-        "meshes_cache",
-        "mpin_morphology"
-    ]
 
     def __init__(self, base_dir=None, **kwargs):
         """
@@ -37,24 +29,19 @@ class Paths:
         :param kwargs: use the name of a folder as key and a path as argument to specify the path of individual subfolders
         """
         # Get and make base directory
+
         if base_dir is None:
-            user_dir = Path.home()
-            if not user_dir.is_dir():
-                raise FileExistsError(
-                    "Could not find user base folder (to save data). Platform: {}".format(
-                        sys.platform
-                    )
-                )
-            self.base_dir = user_dir / ".morphapi"
+            self.base_dir = Path.home() / ".morphapi"
         else:
             self.base_dir = base_dir
 
         self.base_dir.mkdir(exist_ok=True)
 
-        for fld_name in self._folders:
+        for fld_name, folder in default_paths.items():
             # Check if user provided a path for this folder, otherwise use default
+
             path = self.base_dir / kwargs.pop(fld_name,
-                                              default_paths[fld_name])
+                                              folder)
 
             # Create folder if it doesn't exist:
             path.mkdir(parents=True, exist_ok=True)

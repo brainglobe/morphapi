@@ -36,8 +36,9 @@ class Neuron(NeuronCache):
         data_file=None,
         neuron_name=None,
         invert_dims=False,
+        **kwargs
     ):
-        super().__init__(self)  # path to data caches
+        super().__init__(**kwargs)  # path to data caches
 
         self.invert_dims = invert_dims
         self.neuron_name = neuron_name
