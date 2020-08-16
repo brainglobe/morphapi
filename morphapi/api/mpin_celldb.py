@@ -51,7 +51,7 @@ def fix_mpin_swgfile(file_path, fixed_file_path=None):
     df.iloc[1:, 1] = 2
 
     # Map points to BrainGlobe orientation:
-    df.iloc[:, 2:-2] = bgspace.map_points_to(TARGET_SPACE, df.iloc[:, 2:-2])
+    df.iloc[:, 2:-2] = bgspace.map_points_to(TARGET_SPACE, df.iloc[:, 2:-2].values)
     df.iloc[0, -2] = NEW_SOMA_SIZE
     df.to_csv(fixed_file_path, sep=" ", header=None, index=False)
 
@@ -112,7 +112,7 @@ class MpinMorphology(Paths):
         # # Download folder with all data:
         download_zip_path = Path(self.mpin_morphology) / "data.zip"
         retrieve_over_http(REMOTE_URL, download_zip_path)
-        #
+
         # Uncompress and delete compressed:
         with zipfile.ZipFile(download_zip_path, "r") as zip_ref:
              zip_ref.extractall(download_zip_path.parent)
