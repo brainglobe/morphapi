@@ -15,12 +15,12 @@ requirements = [
     "pyyaml>=5.3",
     "scikit-image",
     "neurom",
-    "bg_atlasapi"
+    "bg_atlasapi",
 ]
 
 setup(
     name="morphapi",
-    version="0.1.1.4",
+    version="0.1.1.6",
     description="A lightweight python package to download neuronal morphologies",
     long_description=long_description,
     long_description_content_type="text/markdown",
