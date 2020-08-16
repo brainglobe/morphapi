@@ -101,6 +101,13 @@ class MpinMorphologyAPI(Paths):
 
         return self._neurons_df
 
+    def get_neurons_by_structure(self, *region):
+        atlas = BrainGlobeAtlas("mpin_zfish_1um", print_authors=False)
+        IDs = atlas._get_from_structure(region, "id")
+        return list(
+            self.neurons_df.loc[self.neurons_df.region.isin(IDs)].index
+        )
+
     def load_neurons(self, neuron_id, **kwargs):
         """
             Load individual neurons given their IDs
