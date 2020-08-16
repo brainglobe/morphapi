@@ -15,11 +15,11 @@ class NeuronCache(Paths):
         "whole_neuron",
     ]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         """
             Initialise API interaction and fetch metadata of neurons in the Allen Database. 
         """
-        Paths.__init__(self, *args, **kwargs)  # path to data caches
+        super().__init__(**kwargs)  # path to data caches
 
     def get_cache_filenames(self, neuron_name):
         fld = os.path.join(self.meshes_cache, str(neuron_name))

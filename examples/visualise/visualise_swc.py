@@ -11,7 +11,7 @@ from morphapi.morphology.morphology import Neuron
 fp = "examples/example_files/example1.swc"
 
 # Create vedo actors from the .swc file
-neuron = Neuron(swc_file=fp)
+neuron = Neuron(data_file=fp)
 components, neuron = neuron.create_mesh(
     neurite_radius=3,  #
     soma_color="salmon",  # Specify colors [see vedo.colors for more details]

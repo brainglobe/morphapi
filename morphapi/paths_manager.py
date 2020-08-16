@@ -1,5 +1,5 @@
 import sys
-import os
+from pathlib import Path
 
 """
     Class to create and store paths to a number of folders uesed to save/load data
@@ -15,17 +15,11 @@ default_paths = dict(
     meshes_cache="Data/meshes_cache",
     # Other
     mouse_connectivity_cache="Data/mouse_connectivity_cache",
+    mpin_morphology="Data/mpin_morphology"
 )
 
 
 class Paths:
-    _folders = [
-        "allen_morphology_cache",
-        "mouselight_cache",
-        "neuromorphorg_cache",
-        "mouse_connectivity_cache",
-        "meshes_cache",
-    ]
 
     def __init__(self, base_dir=None, **kwargs):
         """
@@ -35,30 +29,20 @@ class Paths:
         :param kwargs: use the name of a folder as key and a path as argument to specify the path of individual subfolders
         """
         # Get and make base directory
+
         if base_dir is None:
-            user_dir = os.path.expanduser("~")
-            if not os.path.isdir(user_dir):
-                raise FileExistsError(
-                    "Could not find user base folder (to save data). Platform: {}".format(
-                        sys.platform
-                    )
-                )
-            self.base_dir = os.path.join(user_dir, ".morphapi")
+            self.base_dir = Path.home() / ".morphapi"
         else:
             self.base_dir = base_dir
 
-        if not os.path.isdir(self.base_dir):
-            os.mkdir(self.base_dir)
+        self.base_dir.mkdir(exist_ok=True)
 
-        for fld_name in self._folders:
+        for fld_name, folder in default_paths.items():
             # Check if user provided a path for this folder, otherwise use default
-            fld_path = kwargs.pop(fld_name, default_paths[fld_name])
 
-            # Make complete path and save it as an attribute of this class
-            path = os.path.join(self.base_dir, fld_path)
+            path = self.base_dir / kwargs.pop(fld_name,
+                                              folder)
 
-            # Create folder if it doesn't exist
-            if not os.path.isdir(path):
-                print("Creating folder at: {}".format(path))
-                os.makedirs(path)
-            self.__setattr__(fld_name, path)
+            # Create folder if it doesn't exist:
+            path.mkdir(parents=True, exist_ok=True)
+            self.__setattr__(fld_name, str(path))

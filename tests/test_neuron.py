@@ -13,7 +13,7 @@ from vedo import Mesh
 @pytest.fixture
 def neuron():
     files = listdir("tests/data")
-    return Neuron(swc_file=choice(files))
+    return Neuron(data_file=choice(files))
 
 
 args = [
