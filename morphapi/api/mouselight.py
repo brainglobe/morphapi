@@ -1,9 +1,8 @@
-import os
 from tqdm import tqdm
 import pandas as pd
 from collections import namedtuple
 
-from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
+from bg_atlasapi import BrainGlobeAtlas
 
 from morphapi.utils.webqueries import post_mouselight, mouselight_base_url
 from morphapi.paths_manager import Paths
@@ -362,20 +361,8 @@ class MouseLightAPI(Paths):
                     "If filtering neuron by region, you need to pass a list of filter regions to use"
                 )
 
-            # Get structure tree
-            smc = MouseConnectivityCache(
-                manifest_file=os.path.join(
-                    self.mouse_connectivity_cache, "manifest.json"
-                )
-            )
-            structure_tree = smc.get_structure_tree()
-            ancestors_tree = structure_tree.get_ancestor_id_map()
-            filter_regions_ids = [
-                struct["id"]
-                for struct in structure_tree.get_structures_by_acronym(
-                    filter_regions
-                )
-            ]
+            # get brain globe atlas
+            atlas = BrainGlobeAtlas("allen_mouse_25um")
 
             # Filter by soma
             if filterby == "soma":
@@ -384,15 +371,18 @@ class MouseLightAPI(Paths):
                     if neuron["brainArea_acronym"] is None:
                         continue
 
-                    # Get region ID (of the soma) and the IDs of its ancestors
-                    region = structure_tree.get_structures_by_acronym(
-                        [neuron["brainArea_acronym"]]
-                    )[0]
-                    region_ancestors = ancestors_tree[region["id"]]
+                    # get ancestors of neuron's regions
+                    try:
+                        neuron_region_ancestors = atlas.get_structure_ancestors(
+                            neuron["brainArea_acronym"]
+                        )
+                    except KeyError:
+                        # ignore if region is not found
+                        continue
 
                     # If any of the ancestors are in the allowed regions, keep neuron.
                     if is_any_item_in_list(
-                        filter_regions_ids, region_ancestors
+                        filter_regions, neuron_region_ancestors
                     ):
                         filtered_neurons.append(neuron)
                 print(

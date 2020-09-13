@@ -6,7 +6,7 @@ from morphapi.api.mouselight import MouseLightAPI
 # ---------------------------- Downloading neurons --------------------------- #
 mlapi = MouseLightAPI()
 
-# Fetch metadata for neurons with some in the secondary motor cortex
+# Fetch metadata for neurons with soma in the secondary motor cortex
 neurons_metadata = mlapi.fetch_neurons_metadata(
     filterby="soma", filter_regions=["MOs"]
 )

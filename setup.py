@@ -10,17 +10,15 @@ requirements = [
     "pandas",
     "vedo>=2020.3.3",
     "vtk",
-    "allensdk",
     "tqdm",
     "pyyaml>=5.3",
-    "scikit-image",
     "neurom",
     "bg_atlasapi",
 ]
 
 setup(
     name="morphapi",
-    version="0.1.1.7",
+    version="0.1.1.8",
     description="A lightweight python package to download neuronal morphologies",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -33,6 +31,7 @@ setup(
             "coveralls",
             "coverage<=4.5.4",
             "pytest-sugar",
+            "allensdk",
         ],
     },
     python_requires=">=3.6",

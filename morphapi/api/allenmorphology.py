@@ -7,8 +7,13 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
-from allensdk.core.cell_types_cache import CellTypesCache
-from allensdk.api.queries.cell_types_api import CellTypesApi
+try:
+    from allensdk.core.cell_types_cache import CellTypesCache
+    from allensdk.api.queries.cell_types_api import CellTypesApi
+except ModuleNotFoundError:
+    raise ModuleNotFoundError(
+        'You need to install the allen sdk package to use AllenMorphology:  "pip install allensdk"'
+    )
 
 from morphapi.paths_manager import Paths
 from morphapi.utils.data_io import connected_to_internet
