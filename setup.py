@@ -14,11 +14,12 @@ requirements = [
     "pyyaml>=5.3",
     "neurom",
     "bg_atlasapi",
+    "pyinspect",
 ]
 
 setup(
     name="morphapi",
-    version="0.1.1.8",
+    version="0.1.1.9",
     description="A lightweight python package to download neuronal morphologies",
     long_description=long_description,
     long_description_content_type="text/markdown",
