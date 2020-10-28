@@ -2,8 +2,7 @@ import pandas as pd
 from pathlib import Path
 import zipfile
 import shutil
-from tqdm import tqdm
-
+from rich.progress import track
 
 from morphapi.paths_manager import Paths
 from morphapi.utils.data_io import connected_to_internet
@@ -155,7 +154,7 @@ class MpinMorphologyAPI(Paths):
         )
         self.data_path.mkdir(exist_ok=True)
 
-        for f in tqdm(
+        for f in track(
             list(extracted_data_path.glob("*.swc")), desc="Fixing swc files"
         ):
             fix_mpin_swgfile(f, self.data_path / f.name)

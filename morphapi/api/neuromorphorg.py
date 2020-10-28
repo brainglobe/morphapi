@@ -1,6 +1,4 @@
 import os
-from tqdm import tqdm
-
 from morphapi.utils.webqueries import request, connected_to_internet
 from morphapi.paths_manager import Paths
 from morphapi.morphology.morphology import Neuron
@@ -18,6 +16,14 @@ class NeuroMorpOrgAPI(Paths):
             )
 
         Paths.__init__(self, *args, **kwargs)
+
+        # Check that neuromorpho.org is not down
+        try:
+            request("http://neuromorpho.org/api/health")
+        except Exception as e:
+            raise ConnectionError(
+                f"It seems that neuromorphos API is down: {e}"
+            )
 
         # Fields contains the types of fields that can be used to restrict queries
         self.fields = request(self._base_url + "/fields").json()[
@@ -107,7 +113,7 @@ class NeuroMorpOrgAPI(Paths):
         """
         return request(self._base_url + f"/name/{nname}").json()
 
-    def download_neurons(self, neurons, _name=None, verbose=True, **kwargs):
+    def download_neurons(self, neurons, _name=None, **kwargs):
         """
             Downloads neuronal morphological data and saves it to .swc files. 
             It then returns a list of Neuron instances with morphological data for each neuron.
@@ -121,12 +127,15 @@ class NeuroMorpOrgAPI(Paths):
             neurons = [neurons]
 
         to_return = []
-        if verbose:
-            print("Downloading neurons")
-        for neuron in tqdm(neurons, disable=not verbose):
-
+        for neuron in neurons:
             if not isinstance(neuron, dict):
                 raise ValueError()
+
+            try:
+                neuron["status"] == 500  # download went wrong
+                continue
+            except KeyError:
+                pass
 
             filepath = os.path.join(
                 self.neuromorphorg_cache, f"{neuron['neuron_id']}.swc"

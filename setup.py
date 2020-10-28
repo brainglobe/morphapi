@@ -10,7 +10,7 @@ requirements = [
     "pandas",
     "vedo>=2020.3.3",
     "vtk",
-    "tqdm",
+    "rich",
     "pyyaml>=5.3",
     "neurom",
     "bg_atlasapi",
@@ -18,7 +18,7 @@ requirements = [
 
 setup(
     name="morphapi",
-    version="0.1.1.9",
+    version="0.1.2.0",
     description="A lightweight python package to download neuronal morphologies",
     long_description=long_description,
     long_description_content_type="text/markdown",

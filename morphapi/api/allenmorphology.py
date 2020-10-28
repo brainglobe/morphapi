@@ -5,7 +5,7 @@ sys.path.append("./")
 import os
 import pandas as pd
 import numpy as np
-from tqdm import tqdm
+from rich.progress import track
 
 try:
     from allensdk.core.cell_types_cache import CellTypesCache
@@ -81,7 +81,7 @@ class AllenMorphology(Paths):
 
         neurons = []
         print("Downloading neurons")
-        for neuron_id in tqdm(ids):
+        for neuron_id in track(ids):
             neuron_file = os.path.join(
                 self.allen_morphology_cache, "{}.swc".format(neuron_id)
             )
