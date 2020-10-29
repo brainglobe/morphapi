@@ -427,9 +427,9 @@ class MouseLightAPI(Paths):
             downloaded = nmapi.download_neurons(
                 nmapi.get_neuron_by_name(neuron["idString"]),
                 _name="mouselight_",
+                invert_dims=True,
             )
 
-            print(downloaded)
             neurons.append(downloaded)
 
         return flatten_list(neurons)
