@@ -3,8 +3,8 @@ import json
 import requests
 import yaml
 import gzip
+import imio
 import numpy as np
-from brainio import brainio
 from vedo import load, Volume
 
 
@@ -137,7 +137,7 @@ def load_volume_file(filepath):
     if not os.path.isfile(filepath):
         raise FileNotFoundError(filepath)
     try:
-        volume = brainio.load_any(filepath)
+        volume = imio.load_any(filepath)
     except:
         raise ValueError(f"Could not load volume data: {filepath}")
     else:
