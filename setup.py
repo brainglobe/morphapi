@@ -14,6 +14,7 @@ requirements = [
     "pyyaml>=5.3",
     "neurom",
     "bg_atlasapi",
+    "imio"
 ]
 
 setup(
