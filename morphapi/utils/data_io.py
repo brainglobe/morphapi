@@ -4,8 +4,6 @@ import requests
 import yaml
 import gzip
 import numpy as np
-from brainio import brainio
-from vedo import load, Volume
 
 
 def listdir(fld):
@@ -124,43 +122,6 @@ def load_yaml(filepath):
     if "yml" not in filepath and "yaml" not in filepath:
         raise ValueError("unrecognized file path: {}".format(filepath))
     return yaml.load(open(filepath), Loader=yaml.FullLoader)
-
-
-def load_volume_file(filepath):
-    """
-    Load a volume file (e.g., .nii) and returns the data
-
-    :param filepath: path to file
-    :param **kwargs: 
-
-    """
-    if not os.path.isfile(filepath):
-        raise FileNotFoundError(filepath)
-    try:
-        volume = brainio.load_any(filepath)
-    except:
-        raise ValueError(f"Could not load volume data: {filepath}")
-    else:
-        return volume
-
-
-def load_mesh_from_file(filepath, *args, **kwargs):
-    """	
-    Load a a mesh or volume from files like .obj, .stl, ...
-
-    :param filepath: path to file
-    :param **kwargs: 
-
-    """
-    if not os.path.isfile(filepath):
-        raise FileNotFoundError(filepath)
-
-    try:
-        actor = load(filepath, *args, **kwargs)
-    except:
-        actor = Volume(load_volume_file(filepath, *args, **kwargs))
-
-    return actor
 
 
 # ----------------------------- Internet queries ----------------------------- #
