@@ -155,7 +155,8 @@ class MpinMorphologyAPI(Paths):
         self.data_path.mkdir(exist_ok=True)
 
         for f in track(
-            list(extracted_data_path.glob("*.swc")), desc="Fixing swc files"
+            list(extracted_data_path.glob("*.swc")),
+            description="Fixing swc files",
         ):
             fix_mpin_swgfile(f, self.data_path / f.name)
 
