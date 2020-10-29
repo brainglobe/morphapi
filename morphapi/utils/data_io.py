@@ -1,9 +1,6 @@
 import os
-import json
 import requests
 import yaml
-import gzip
-import numpy as np
 
 
 def listdir(fld):
@@ -19,57 +16,12 @@ def listdir(fld):
     return [os.path.join(fld, f) for f in os.listdir(fld)]
 
 
-def get_subdirs(folderpath):
-    """
-        Returns the subfolders in a given folder
-    """
-    return [f.path for f in os.scandir(folderpath) if f.is_dir()]
-
-
-def check_file_exists(filepath, raise_error=False):
-    # Check if a file with the given path exists already
-    if os.path.isfile(filepath):
-        return True
-    elif raise_error:
-        raise FileExistsError("File {} doesn't exist".format(filepath))
-    else:
-        return False
-
-
 def get_file_name(filepath):
     # Returns just the name, no complete path or extension
     return os.path.splitext(os.path.basename(filepath))[0]
 
 
 # ------------------------------ Load/Save data ------------------------------ #
-def load_npy_from_gz(filepath):
-    f = gzip.GzipFile(filepath, "r")
-    return np.load(f)
-
-
-def save_npy_to_gz(filepath, data):
-    f = gzip.GzipFile(filepath, "w")
-    np.save(f, data)
-    f.close()
-
-
-def save_json(filepath, content, append=False):
-    """
-    Saves content to a JSON file
-
-    :param filepath: path to a file (must include .json)
-    :param content: dictionary of stuff to save
-
-    """
-    if "json" not in filepath:
-        raise ValueError("filepath is invalid")
-
-    if not append:
-        with open(filepath, "w") as json_file:
-            json.dump(content, json_file, indent=4)
-    else:
-        with open(filepath, "w+") as json_file:
-            json.dump(content, json_file, indent=4)
 
 
 def save_yaml(filepath, content, append=False, topcomment=None):
@@ -94,20 +46,6 @@ def save_yaml(filepath, content, append=False, topcomment=None):
         if topcomment is not None:
             yaml_file.write(topcomment)
         yaml.dump(content, yaml_file, default_flow_style=False, indent=4)
-
-
-def load_json(filepath):
-    """
-    Load a JSON file
-
-    :param filepath: path to a file
-
-    """
-    if not os.path.isfile(filepath) or ".json" not in filepath.lower():
-        raise ValueError("unrecognized file path: {}".format(filepath))
-    with open(filepath) as f:
-        data = json.load(f)
-    return data
 
 
 def load_yaml(filepath):
@@ -139,24 +77,6 @@ def connected_to_internet(url="http://www.google.com/", timeout=5):
     except requests.ConnectionError:
         print("No internet connection available.")
     return False
-
-
-def send_query(query_string, clean=False):
-    """
-    Send a query/request to a website
-
-    :param query_string: string with query content
-    :param clean:  (Default value = False)
-
-    """
-    response = requests.get(query_string)
-    if response.ok:
-        if not clean:
-            return response.json()["msg"]
-        else:
-            return response.json()
-    else:
-        raise ValueError("Invalide query string: {}".format(query_string))
 
 
 # ---------------------------------------------------------------------------- #
