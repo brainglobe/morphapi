@@ -133,7 +133,7 @@ def make_query(filterby=None, filter_regions=None, invert=False):
                     name
                     safeName
                     atlasId
-                    aliases
+                    aliasList
                     structureIdPath
                 }
 
@@ -143,10 +143,7 @@ def make_query(filterby=None, filter_regions=None, invert=False):
                     y
                     z
                     radius
-                    brainArea{
-                        id
-                        acronym
-                    }
+                    brainAreaIdCcfV30
                     sampleNumber
                     parentNumber
                     
@@ -300,7 +297,6 @@ class MouseLightAPI(Paths):
                 brainArea_name = neuron["brainArea"]["name"]
                 brainArea_safename = neuron["brainArea"]["safeName"]
                 brainArea_atlasId = neuron["brainArea"]["atlasId"]
-                brainArea_aliases = neuron["brainArea"]["aliases"]
                 brainArea_structureIdPath = neuron["brainArea"][
                     "structureIdPath"
                 ]
@@ -310,7 +306,6 @@ class MouseLightAPI(Paths):
                 brainArea_name = None
                 brainArea_safename = None
                 brainArea_atlasId = None
-                brainArea_aliases = None
                 brainArea_structureIdPath = None
 
             if len(neuron["tracings"]) > 1:
@@ -329,7 +324,6 @@ class MouseLightAPI(Paths):
                 brainArea_name=brainArea_name,
                 brainArea_safename=brainArea_safename,
                 brainArea_atlasId=brainArea_atlasId,
-                brainArea_aliases=brainArea_aliases,
                 brainArea_structureIdPath=brainArea_structureIdPath,
                 id=neuron["id"],
                 idNumber=neuron["idNumber"],
@@ -340,7 +334,7 @@ class MouseLightAPI(Paths):
                     neuron["tracings"][0]["soma"]["y"],
                     neuron["tracings"][0]["soma"]["z"],
                     neuron["tracings"][0]["soma"]["radius"],
-                    neuron["tracings"][0]["soma"]["brainArea"],
+                    brainArea_name,
                     neuron["tracings"][0]["soma"]["sampleNumber"],
                     neuron["tracings"][0]["soma"]["parentNumber"],
                 ),
