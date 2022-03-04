@@ -80,7 +80,7 @@ class NeuroMorpOrgAPI(Paths):
                 raise NotImplementedError("Need to join the list")
 
             if n > 0:
-                url += "&"
+                url += "&fq="
             url += f"{crit}:{val}"
 
         url += f"&size={int(size)}&page={int(page)}"
