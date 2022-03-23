@@ -12,7 +12,7 @@ requirements = [
     "vtk",
     "rich",
     "pyyaml>=5.3",
-    "neurom<=1.4.20",
+    "neurom<4",
     "bg_atlasapi",
 ]
 
