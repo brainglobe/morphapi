@@ -25,6 +25,8 @@ def test_neuromorpho_download():
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
+    assert api.download_neurons(metadata, load_neurons=False) is None
+
 
 def test_mouselight_download():
     mlapi = MouseLightAPI()
@@ -37,17 +39,26 @@ def test_mouselight_download():
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
+    assert (
+        mlapi.download_neurons(neurons_metadata[0], load_neurons=False) is None
+    )
+
 
 def test_allen_morphology_download():
     am = AllenMorphology()
 
     # Select some mouse neurons in the primary visual cortex
-    neurons = am.neurons.loc[
+    neurons_df = am.neurons.loc[
         (am.neurons.species == "Mus musculus")
         & (am.neurons.structure_area_abbrev == "VISp")
     ]
 
     # Download some neurons
-    neurons = am.download_neurons(neurons.sample(3).id.values)
+    neurons = am.download_neurons(neurons_df.sample(3).id.values)
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
+
+    assert (
+        am.download_neurons(neurons_df.sample(3).id.values, load_neurons=False)
+        is None
+    )
