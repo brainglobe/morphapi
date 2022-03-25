@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from collections import namedtuple
 import numpy as np
@@ -8,12 +7,20 @@ from vedo import merge
 from vedo.colors import colorMap
 
 import neurom as nm
-from neurom.core import iter_sections
 from neurom.core.dataformat import COLS
+try:
+    # For NeuroM >= 3
+    from neurom.core.morphology import iter_sections
+except ImportError:
+    # For NeuroM < 2
+    try:
+        from neurom.core import iter_sections
+    except ImportError:
+        # For NeuroM >= 2, < 3
+        from neurom import iter_sections
 
 
 from morphapi.morphology.cache import NeuronCache
-from morphapi.utils.data_io import get_file_name
 
 import warnings
 
@@ -62,7 +69,7 @@ class Neuron(NeuronCache):
             self.load_from_swc()
 
     def repair_swc_file(self):
-        """ 
+        """
             Fixes this: https://github.com/BlueBrain/NeuroM/issues/835
         """
         with open(self.data_file, "r") as read:
