@@ -25,7 +25,7 @@ class AllenMorphology(Paths):
 
     def __init__(self, *args, **kwargs):
         """
-            Initialise API interaction and fetch metadata of neurons in the Allen Database. 
+            Initialise API interaction and fetch metadata of neurons in the Allen Database.
         """
         if not connected_to_internet():
             raise ConnectionError(
@@ -57,7 +57,7 @@ class AllenMorphology(Paths):
         self.downloaded_neurons = self.get_downloaded_neurons()
 
     def get_downloaded_neurons(self):
-        """ 
+        """
             Get's the path to files of downloaded neurons
         """
         return [
@@ -66,7 +66,7 @@ class AllenMorphology(Paths):
             if ".swc" in f
         ]
 
-    def download_neurons(self, ids, **kwargs):
+    def download_neurons(self, ids, load_neurons=True, **kwargs):
         """
             Download neurons and return neuron reconstructions (instances
             of Neuron class)
@@ -90,8 +90,12 @@ class AllenMorphology(Paths):
             self.ctc.get_reconstruction(neuron_id, file_name=neuron_file)
 
             # Reconstruct neuron
-            neurons.append(
-                Neuron(neuron_file, neuron_name=str(neuron_id), **kwargs)
-            )
+            if load_neurons:
+                neurons.append(
+                    Neuron(neuron_file, neuron_name=str(neuron_id), **kwargs)
+                )
 
-        return neurons
+        if load_neurons:
+            return neurons
+        else:
+            return None
