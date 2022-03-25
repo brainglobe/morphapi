@@ -113,14 +113,16 @@ class NeuroMorpOrgAPI(Paths):
         """
         return request(self._base_url + f"/name/{nname}").json()
 
-    def download_neurons(self, neurons, _name=None, **kwargs):
+    def download_neurons(
+        self, neurons, _name=None, load_neurons=True, **kwargs
+    ):
         """
-            Downloads neuronal morphological data and saves it to .swc files. 
+            Downloads neuronal morphological data and saves it to .swc files.
             It then returns a list of Neuron instances with morphological data for each neuron.
 
             :param neurons: list of neurons metadata (as returned by one of the functions
                         used to fetch metadata)
-            :param _name: used internally to save cached neurons with a different prefix when the 
+            :param _name: used internally to save cached neurons with a different prefix when the
                     class is used to download neurons for other APIs
         """
         if not isinstance(neurons, (list, tuple)):
@@ -151,7 +153,7 @@ class NeuroMorpOrgAPI(Paths):
                 req = request(url)
                 if not req.ok:
                     raise ValueError(
-                        f"Failed to getch morphology data for neuron: {neuron['name']}"
+                        f"Failed to fetch morphology data for neuron: {neuron['name']}"
                     )
 
                 with open(filepath, "w") as f:
@@ -160,12 +162,16 @@ class NeuroMorpOrgAPI(Paths):
             if _name is None:
                 _name = "neuromorpho_"
 
-            to_return.append(
-                Neuron(
-                    filepath,
-                    neuron_name=_name + str(neuron["neuron_id"]),
-                    **kwargs,
+            if load_neurons:
+                to_return.append(
+                    Neuron(
+                        filepath,
+                        neuron_name=_name + str(neuron["neuron_id"]),
+                        **kwargs,
+                    )
                 )
-            )
 
-        return to_return
+        if load_neurons:
+            return to_return
+        else:
+            return None

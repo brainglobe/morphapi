@@ -11,10 +11,10 @@ from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 
 
 """
-    Collections of functions to query http://ml-neuronbrowser.janelia.org/ and get data about either the status of the API, 
-    the brain regions or the neurons available. 
+    Collections of functions to query http://ml-neuronbrowser.janelia.org/ and get data about either the status of the API,
+    the brain regions or the neurons available.
     Queries are sent by sending POST requests to http://ml-neuronbrowser.janelia.org/graphql
-    with a string query. 
+    with a string query.
 """
 
 # ---------------------------------------------------------------------------- #
@@ -46,7 +46,7 @@ def mouselight_api_info():
 
 def mouselight_get_brainregions():
     """
-        Get metadata about the brain brain regions as they are known by Janelia's Mouse Light. 
+        Get metadata about the brain brain regions as they are known by Janelia's Mouse Light.
         IDs and Names sometimes differ from Allen's CCF.
     """
 
@@ -56,7 +56,7 @@ def mouselight_get_brainregions():
     query = """
             query {
                 brainAreas{
-                    
+
                     acronym
                     name
                     id
@@ -82,7 +82,7 @@ def mouselight_get_brainregions():
 def mouselight_structures_identifiers():
     """
     When the data are downloaded as SWC, each node has a structure identifier ID to tell if it's soma, axon or dendrite.
-    This function returns the ID number --> structure table. 
+    This function returns the ID number --> structure table.
     """
 
     # Download the identifiers used in ML neurons tracers
@@ -120,13 +120,13 @@ def make_query(filterby=None, filter_regions=None, invert=False):
     searchneurons = """
                 queryTime
                 totalCount
-                
+
                 neurons{
                 tag
                 id
                 idNumber
                 idString
-                
+
                 brainArea{
                     id
                     acronym
@@ -146,9 +146,9 @@ def make_query(filterby=None, filter_regions=None, invert=False):
                     brainAreaIdCcfV30
                     sampleNumber
                     parentNumber
-                    
+
                     }
-                
+
                 id
                 tracingStructure{
                     name
@@ -261,11 +261,11 @@ class MouseLightAPI(Paths):
         """
         Download neurons metadata and data from the API. The downloaded metadata can be filtered to keep only
         the neurons whose soma is in a list of user selected brain regions.
-        
+
         :param filterby: Accepted values: "soma". If it's "soma", neurons are kept only when their soma
                         is in the list of brain regions defined by filter_regions (Default value = None)
         :param filter_regions: List of brain regions acronyms. If filtering neurons, these specify the filter criteria. (Default value = None)
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         # Download all metadata
@@ -398,12 +398,12 @@ class MouseLightAPI(Paths):
 
         return neurons
 
-    def download_neurons(self, neurons_metadata, **kwargs):
+    def download_neurons(self, neurons_metadata, load_neurons=True, **kwargs):
         """
         Given a list of neurons metadata from self.fetch_neurons_metadata
         this funcition downloads the morphological data.
         The data are actually downloaded from neuromorpho.org
-        
+
         :param neurons_metadata: list with metadata for neurons to download
         :returns: list of Neuron instances
 
@@ -424,6 +424,10 @@ class MouseLightAPI(Paths):
                 invert_dims=True,
             )
 
-            neurons.append(downloaded)
+            if load_neurons:
+                neurons.append(downloaded)
 
-        return flatten_list(neurons)
+        if load_neurons:
+            return flatten_list(neurons)
+        else:
+            return None
