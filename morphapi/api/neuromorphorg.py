@@ -1,7 +1,11 @@
 import os
+import logging
+
 from morphapi.utils.webqueries import request, connected_to_internet
 from morphapi.paths_manager import Paths
 from morphapi.morphology.morphology import Neuron
+
+logger = logging.getLogger(__name__)
 
 
 class NeuroMorpOrgAPI(Paths):
@@ -94,9 +98,9 @@ class NeuroMorpOrgAPI(Paths):
         page = neurons["page"]
         neurons = neurons["_embedded"]["neuronResources"]
 
-        print(
-            f"Found metadata for {page['totalElements']} neurons [{page['totalPages']} pages in total]"
-            + f"\nReturning metadata about {len(neurons)} neurons from page {page['number']}"
+        logger.info(
+            f"Found metadata for {page['totalElements']} neurons [{page['totalPages']} pages in total]. "
+            f"Returning metadata about {len(neurons)} neurons from page {page['number']}"
         )
 
         return neurons, page
@@ -112,6 +116,12 @@ class NeuroMorpOrgAPI(Paths):
             Get a neuron's metadata given it's name
         """
         return request(self._base_url + f"/name/{nname}").json()
+
+    def build_filepath(self, neuron_id):
+        """
+            Build a filepath from a neuron ID.
+        """
+        return os.path.join(self.neuromorphorg_cache, f"{neuron_id}.swc")
 
     def download_neurons(
         self, neurons, _name=None, load_neurons=True, **kwargs
@@ -139,9 +149,8 @@ class NeuroMorpOrgAPI(Paths):
             except KeyError:
                 pass
 
-            filepath = os.path.join(
-                self.neuromorphorg_cache, f"{neuron['neuron_id']}.swc"
-            )
+            filepath = self.build_filepath(neuron["neuron_id"])
+            load_current_neuron = load_neurons
 
             if not os.path.isfile(filepath):
                 # Download and write to file
@@ -150,28 +159,28 @@ class NeuroMorpOrgAPI(Paths):
                 else:
                     url = f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/{self._version}/{neuron['neuron_name']}.swc"
 
-                req = request(url)
-                if not req.ok:
-                    raise ValueError(
-                        f"Failed to fetch morphology data for neuron: {neuron['name']}"
+                try:
+                    req = request(url)
+                    with open(filepath, "w") as f:
+                        f.write(req.content.decode("utf-8"))
+                except ValueError as exc:
+                    logger.error(
+                        "Could not fetch the neuron %s for the following reason: %s",
+                        neuron["neuron_name"],
+                        str(exc),
                     )
-
-                with open(filepath, "w") as f:
-                    f.write(req.content.decode("utf-8"))
+                    load_current_neuron = False
 
             if _name is None:
                 _name = "neuromorpho_"
 
-            if load_neurons:
-                to_return.append(
-                    Neuron(
-                        filepath,
-                        neuron_name=_name + str(neuron["neuron_id"]),
-                        **kwargs,
-                    )
+            to_return.append(
+                Neuron(
+                    filepath,
+                    neuron_name=_name + str(neuron["neuron_id"]),
+                    load_file=load_current_neuron,
+                    **kwargs,
                 )
+            )
 
-        if load_neurons:
-            return to_return
-        else:
-            return None
+        return to_return

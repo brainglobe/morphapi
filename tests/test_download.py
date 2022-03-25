@@ -25,7 +25,16 @@ def test_neuromorpho_download():
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
-    assert api.download_neurons(metadata, load_neurons=False) is None
+    # Test no load
+    assert api.download_neurons(metadata, load_neurons=False)[0].points is None
+
+    # Test failure
+    metadata[0]["neuron_id"] = "BAD ID"
+    metadata[0]["neuron_name"] = "BAD NAME"
+    neurons = api.download_neurons([metadata[0]])
+
+    assert neurons[0].data_file.name == "BAD ID.swc"
+    assert neurons[0].points is None
 
 
 def test_mouselight_download():
@@ -34,14 +43,26 @@ def test_mouselight_download():
     neurons_metadata = mlapi.fetch_neurons_metadata(
         filterby="soma", filter_regions=["MOs"]
     )
+    neurons_metadata = sorted(neurons_metadata, key=lambda x: x["idString"])
 
     neurons = mlapi.download_neurons(neurons_metadata[0])
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
+    # Test no load
     assert (
-        mlapi.download_neurons(neurons_metadata[0], load_neurons=False) is None
+        mlapi.download_neurons(neurons_metadata[0], load_neurons=False)[
+            0
+        ].points
+        is None
     )
+
+    # Test failure
+    neurons_metadata[0]["idString"] = "BAD ID"
+    neurons = mlapi.download_neurons(neurons_metadata[0])
+
+    assert neurons[0].data_file.name == "BAD ID.swc"
+    assert neurons[0].points is None
 
 
 def test_allen_morphology_download():
@@ -51,14 +72,24 @@ def test_allen_morphology_download():
     neurons_df = am.neurons.loc[
         (am.neurons.species == "Mus musculus")
         & (am.neurons.structure_area_abbrev == "VISp")
-    ]
+    ].loc[[2, 123, 505]]
 
     # Download some neurons
-    neurons = am.download_neurons(neurons_df.sample(3).id.values)
+    neurons = am.download_neurons(neurons_df["id"].values)
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
-    assert (
-        am.download_neurons(neurons_df.sample(3).id.values, load_neurons=False)
-        is None
+    # Test no load
+    assert all(
+        i.points is None
+        for i in am.download_neurons(
+            neurons_df["id"].values, load_neurons=False
+        )
     )
+
+    # Test failure
+    neurons_df.loc[2, "id"] = "BAD ID"
+    neurons = am.download_neurons(neurons_df["id"].values)
+
+    assert neurons[0].data_file.name == "BAD ID.swc"
+    assert neurons[0].points is None

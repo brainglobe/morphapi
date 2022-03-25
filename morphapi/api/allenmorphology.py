@@ -1,3 +1,4 @@
+import logging
 import sys
 
 sys.path.append("./")
@@ -5,7 +6,6 @@ sys.path.append("./")
 import os
 import pandas as pd
 import numpy as np
-from rich.progress import track
 
 try:
     from allensdk.core.cell_types_cache import CellTypesCache
@@ -18,6 +18,8 @@ except ModuleNotFoundError:
 from morphapi.paths_manager import Paths
 from morphapi.utils.data_io import connected_to_internet
 from morphapi.morphology.morphology import Neuron
+
+logger = logging.getLogger(__name__)
 
 
 class AllenMorphology(Paths):
@@ -66,6 +68,14 @@ class AllenMorphology(Paths):
             if ".swc" in f
         ]
 
+    def build_filepath(self, neuron_id):
+        """
+            Build a filepath from neuron's metadata.
+        """
+        return os.path.join(
+            self.allen_morphology_cache, "{}.swc".format(neuron_id)
+        )
+
     def download_neurons(self, ids, load_neurons=True, **kwargs):
         """
             Download neurons and return neuron reconstructions (instances
@@ -75,27 +85,37 @@ class AllenMorphology(Paths):
 
         """
         if isinstance(ids, np.ndarray):
-            ids = list(ids)
+            ids = ids.tolist()
         if not isinstance(ids, (list)):
             ids = [ids]
 
         neurons = []
-        print("Downloading neurons")
-        for neuron_id in track(ids):
-            neuron_file = os.path.join(
-                self.allen_morphology_cache, "{}.swc".format(neuron_id)
+        for neuron_id in ids:
+            neuron_file = self.build_filepath(neuron_id)
+            load_current_neuron = load_neurons
+            logger.debug(
+                "Downloading neuron '%s' to %s", neuron_id, neuron_file
             )
 
             # Download file
-            self.ctc.get_reconstruction(neuron_id, file_name=neuron_file)
+            try:
+                self.ctc.get_reconstruction(neuron_id, file_name=neuron_file)
+            except Exception as exc:
+                logger.error(
+                    "Could not fetch the neuron %s for the following reason: %s",
+                    neuron_id,
+                    str(exc),
+                )
+                load_current_neuron = False
 
             # Reconstruct neuron
-            if load_neurons:
-                neurons.append(
-                    Neuron(neuron_file, neuron_name=str(neuron_id), **kwargs)
+            neurons.append(
+                Neuron(
+                    neuron_file,
+                    neuron_name=str(neuron_id),
+                    load_file=load_current_neuron,
+                    **kwargs,
                 )
+            )
 
-        if load_neurons:
-            return neurons
-        else:
-            return None
+        return neurons

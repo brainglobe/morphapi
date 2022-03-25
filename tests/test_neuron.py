@@ -55,3 +55,23 @@ def test_create_mesh_args(neuron):
         neurite_radius=np.random.uniform(2, 20), neuron_color="red"
     )
     neuron.create_mesh(neuron_number=1, cmap="Reds")
+
+
+def test_empty_neuron(caplog):
+    file = listdir("tests/data")[0]
+    neuron = Neuron(file, load_file=False)
+
+    assert str(neuron.data_file) == "tests/data/example1.swc"
+
+    caplog.clear()
+    neuron.create_mesh()
+
+    assert caplog.messages == [
+        "No data loaded, you can use the 'load_from_file' method to try to load the file."
+    ]
+
+    neuron.load_from_file()
+
+    caplog.clear()
+    neuron.create_mesh()
+    assert caplog.messages == []
