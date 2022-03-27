@@ -1,13 +1,17 @@
-from rich.progress import track
-import pandas as pd
+import logging
 from collections import namedtuple
+
+import pandas as pd
 
 from bg_atlasapi import BrainGlobeAtlas
 
-from morphapi.utils.webqueries import post_mouselight, mouselight_base_url
+from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
+from morphapi.morphology.morphology import Neuron
 from morphapi.paths_manager import Paths
 from morphapi.utils.data_io import is_any_item_in_list, flatten_list
-from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
+from morphapi.utils.webqueries import post_mouselight, mouselight_base_url
+
+logger = logging.getLogger(__name__)
 
 
 """
@@ -37,10 +41,8 @@ def mouselight_api_info():
                 }
             """
     res = post_mouselight(url, query=query)
-    print(
-        "{} neurons on MouseLight database. ".format(
-            res["queryData"]["totalCount"]
-        )
+    logger.info(
+        "%s neurons on MouseLight database. ", res["queryData"]["totalCount"]
     )
 
 
@@ -269,17 +271,17 @@ class MouseLightAPI(Paths):
 
         """
         # Download all metadata
-        print("Querying MouseLight API...")
+        logger.debug("Querying MouseLight API...")
         url = mouselight_base_url + "graphql"
         query = make_query(
             filterby=filterby, filter_regions=filter_regions, **kwargs
         )
 
         res = post_mouselight(url, query=query)["searchNeurons"]
-        print(
-            "     ... fetched metadata for {} neurons in {}s".format(
-                res["totalCount"], round(res["queryTime"] / 1000, 2)
-            )
+        logger.info(
+            "Fetched metadata for %s neurons in %ss",
+            res["totalCount"],
+            round(res["queryTime"] / 1000, 2),
         )
 
         # Process neurons to clean up the results and make them easier to handle
@@ -289,7 +291,7 @@ class MouseLightAPI(Paths):
             "tracing_structure", "id name value named_id"
         )
 
-        cleaned_nurons = []  # <- output is stored here
+        cleaned_neurons = []  # <- output is stored here
         for neuron in neurons:
             if neuron["brainArea"] is not None:
                 brainArea_acronym = neuron["brainArea"]["acronym"]
@@ -346,7 +348,7 @@ class MouseLightAPI(Paths):
                 ),
                 dendrite=dendrite,
             )
-            cleaned_nurons.append(clean_neuron)
+            cleaned_neurons.append(clean_neuron)
 
         # Filter neurons to keep only those matching the search criteria
         if filterby is not None:
@@ -361,7 +363,7 @@ class MouseLightAPI(Paths):
             # Filter by soma
             if filterby == "soma":
                 filtered_neurons = []
-                for neuron in cleaned_nurons:
+                for neuron in cleaned_neurons:
                     if neuron["brainArea_acronym"] is None:
                         continue
 
@@ -379,22 +381,17 @@ class MouseLightAPI(Paths):
                         filter_regions, neuron_region_ancestors
                     ):
                         filtered_neurons.append(neuron)
-                print(
-                    "	... selected {} neurons out of {}".format(
-                        len(filtered_neurons), res["totalCount"]
-                    )
-                )
 
                 neurons = filtered_neurons
             else:
-                print(
-                    "	... selected {} neurons out of {}".format(
-                        len(cleaned_nurons), res["totalCount"]
-                    )
-                )
-                neurons = cleaned_nurons
+                neurons = cleaned_neurons
+            logger.info(
+                "Selected %s neurons out of %s",
+                len(neurons),
+                res["totalCount"],
+            )
         else:
-            neurons = cleaned_nurons
+            neurons = cleaned_neurons
 
         return neurons
 
@@ -415,19 +412,33 @@ class MouseLightAPI(Paths):
         nmapi._version = "Source-Version"
 
         neurons = []
-        print("Downloading neurons")
 
-        for neuron in track(neurons_metadata):
+        for neuron in neurons_metadata:
+            try:
+                nrn = nmapi.get_neuron_by_name(neuron["idString"])
+            except ValueError as exc:
+                logger.error(
+                    "Could not fetch the neuron %s for the following reason: %s",
+                    neuron["idString"],
+                    str(exc),
+                )
+                neurons.append(
+                    Neuron(
+                        nmapi.build_filepath(neuron["idString"]),
+                        neuron_name="mouselight_" + str(neuron["idString"]),
+                        invert_dims=True,
+                        load_file=False,
+                    )
+                )
+                continue
+
             downloaded = nmapi.download_neurons(
-                nmapi.get_neuron_by_name(neuron["idString"]),
+                nrn,
                 _name="mouselight_",
                 invert_dims=True,
+                load_neurons=load_neurons,
             )
 
-            if load_neurons:
-                neurons.append(downloaded)
+            neurons.append(downloaded)
 
-        if load_neurons:
-            return flatten_list(neurons)
-        else:
-            return None
+        return flatten_list(neurons)

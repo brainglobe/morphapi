@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from collections import namedtuple
 import numpy as np
@@ -8,6 +9,7 @@ from vedo.colors import colorMap
 
 import neurom as nm
 from neurom.core.dataformat import COLS
+
 try:
     # For NeuroM >= 3
     from neurom.core.morphology import iter_sections
@@ -26,6 +28,8 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+logger = logging.getLogger(__name__)
+
 component = namedtuple("component", "x y z coords radius component")
 
 
@@ -40,10 +44,11 @@ class Neuron(NeuronCache):
 
     def __init__(
         self,
-        data_file=None,
+        data_file,
         neuron_name=None,
         invert_dims=False,
-        **kwargs
+        load_file=True,
+        **kwargs,
     ):
         super().__init__(**kwargs)  # path to data caches
 
@@ -51,16 +56,23 @@ class Neuron(NeuronCache):
         self.neuron_name = neuron_name
 
         self.data_file = Path(data_file)
-        if not self.data_file.exists():
-            raise ValueError("The specified path does not exist!")
         self.data_file_type = self.data_file.suffix[1:]
 
         if self.data_file_type not in ["swc", "json"]:
             raise ValueError("Invalid data file type, should be swc or jon")
 
-        self.load_from_file()
+        if self.neuron_name is None:
+            self.neuron_name = self.data_file.name
+
+        if load_file:
+            self.load_from_file()
+        else:
+            self.points = None
 
     def load_from_file(self):
+        if not self.data_file.exists():
+            raise ValueError("The specified path does not exist!")
+
         if self.data_file_type is None:
             return
         elif self.data_file_type == "json":
@@ -191,7 +203,9 @@ class Neuron(NeuronCache):
         self, neurite_radius=2, soma_radius=4, use_cache=True, **kwargs
     ):
         if self.points is None:
-            print("No data loaded, returning")
+            logger.warning(
+                "No data loaded, you can use the 'load_from_file' method to try to load the file."
+            )
             return
 
         # Parse kwargs
