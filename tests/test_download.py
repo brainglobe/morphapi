@@ -72,7 +72,7 @@ def test_allen_morphology_download():
     neurons_df = am.neurons.loc[
         (am.neurons.species == "Mus musculus")
         & (am.neurons.structure_area_abbrev == "VISp")
-    ].loc[[2, 123, 505]]
+    ].loc[[2, 120, 505]]
 
     # Download some neurons
     neurons = am.download_neurons(neurons_df["id"].values)

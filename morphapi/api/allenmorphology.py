@@ -9,7 +9,6 @@ import numpy as np
 
 try:
     from allensdk.core.cell_types_cache import CellTypesCache
-    from allensdk.api.queries.cell_types_api import CellTypesApi
 except ModuleNotFoundError:
     raise ModuleNotFoundError(
         'You need to install the allen sdk package to use AllenMorphology:  "pip install allensdk"'
@@ -45,9 +44,7 @@ class AllenMorphology(Paths):
 
         # Get a list of cell metadata for neurons with reconstructions, download if necessary
         self.neurons = pd.DataFrame(
-            self.ctc.get_cells(
-                species=[CellTypesApi.MOUSE], require_reconstruction=True
-            )
+            self.ctc.get_cells(require_reconstruction=True)
         )
         self.n_neurons = len(self.neurons)
 
