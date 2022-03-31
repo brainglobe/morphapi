@@ -64,6 +64,31 @@ def test_mouselight_download():
     assert neurons[0].data_file.name == "BAD ID.swc"
     assert neurons[0].points is None
 
+    # Test filter without atlas
+    filtered_neurons_metadata = mlapi.filter_neurons_metadata(
+        neurons_metadata, filterby="soma", filter_regions=["MOs6b"]
+    )
+    assert all(
+        [i["brainArea_acronym"] == "MOs6b" for i in filtered_neurons_metadata]
+    )
+
+    # Test filter with atlas
+    atlas = mlapi.fetch_default_atlas()
+
+    filtered_neurons_metadata_atlas = mlapi.filter_neurons_metadata(
+        neurons_metadata,
+        filterby="soma",
+        filter_regions=["MOs6b"],
+        atlas=atlas,
+    )
+    assert all(
+        [
+            i["brainArea_acronym"] == "MOs6b"
+            for i in filtered_neurons_metadata_atlas
+        ]
+    )
+    assert filtered_neurons_metadata == filtered_neurons_metadata_atlas
+
 
 def test_allen_morphology_download():
     am = AllenMorphology()

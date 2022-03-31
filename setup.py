@@ -14,6 +14,7 @@ requirements = [
     "pyyaml>=5.3",
     "neurom<4",
     "bg_atlasapi",
+    "retry",
 ]
 
 setup(

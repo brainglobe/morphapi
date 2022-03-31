@@ -4,6 +4,7 @@ from collections import namedtuple
 import pandas as pd
 
 from bg_atlasapi import BrainGlobeAtlas
+from retry import retry
 
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 from morphapi.morphology.morphology import Neuron
@@ -242,6 +243,16 @@ def make_query(filterby=None, filter_regions=None, invert=False):
     return query
 
 
+@retry(tries=3, delay=1)
+def fetch_atlas(atlas_name="allen_mouse_25um"):
+    """Fetch a given atlas.
+
+    See here for available atlases:
+    https://docs.brainglobe.info/bg-atlasapi/introduction#atlases-available
+    """
+    return BrainGlobeAtlas(atlas_name)
+
+
 # ---------------------------------------------------------------------------- #
 #                                  MAIN CLASS                                  #
 # ---------------------------------------------------------------------------- #
@@ -350,48 +361,87 @@ class MouseLightAPI(Paths):
             )
             cleaned_neurons.append(clean_neuron)
 
-        # Filter neurons to keep only those matching the search criteria
-        if filterby is not None:
-            if filter_regions is None:
-                raise ValueError(
-                    "If filtering neuron by region, you need to pass a list of filter regions to use"
-                )
-
-            # get brain globe atlas
-            atlas = BrainGlobeAtlas("allen_mouse_25um")
-
-            # Filter by soma
-            if filterby == "soma":
-                filtered_neurons = []
-                for neuron in cleaned_neurons:
-                    if neuron["brainArea_acronym"] is None:
-                        continue
-
-                    # get ancestors of neuron's regions
-                    try:
-                        neuron_region_ancestors = atlas.get_structure_ancestors(
-                            neuron["brainArea_acronym"]
-                        )
-                    except KeyError:
-                        # ignore if region is not found
-                        continue
-
-                    # If any of the ancestors are in the allowed regions, keep neuron.
-                    if is_any_item_in_list(
-                        filter_regions, neuron_region_ancestors
-                    ):
-                        filtered_neurons.append(neuron)
-
-                neurons = filtered_neurons
-            else:
-                neurons = cleaned_neurons
-            logger.info(
-                "Selected %s neurons out of %s",
-                len(neurons),
-                res["totalCount"],
+        if filter_regions is not None:
+            cleaned_neurons = self.filter_neurons_metadata(
+                cleaned_neurons,
+                filterby=filterby,
+                filter_regions=filter_regions,
             )
+
+        return cleaned_neurons
+
+    @staticmethod
+    def fetch_default_atlas():
+        """Fetch the allen mouse 25nm atlas."""
+        return fetch_atlas("allen_mouse_25um")
+
+    def filter_neurons_metadata(
+        self,
+        neurons_metadata,
+        filterby="soma",
+        filter_regions=None,
+        atlas=None,
+    ):
+        """
+        Filter metadata to keep only the neurons whose soma is in a given list of brain regions.
+
+        :param filterby: Accepted values: "soma". If it's "soma", neurons are kept only when their
+                         soma is in the list of brain regions defined by filter_regions (Default
+                         value = None)
+        :param filter_regions: List of brain regions acronyms. If filtering neurons, these specify
+                               the filter criteria. (Default value = None)
+        :param atlas: A `bg_atlasapi.BrainGlobeAtlas` object. If not provided, load the
+                      default atlas.
+        """
+
+        # Filter neurons to keep only those matching the search criteria
+        if filterby is None:
+            logger.info(
+                "Returning all neurons because 'filterby' is set to None",
+            )
+            return neurons_metadata
+
+        if filter_regions is None:
+            raise ValueError(
+                "If filtering neuron by region, you need to pass a list of filter regions to use"
+            )
+
+        # get brain globe atlas
+        if atlas is None:
+            atlas = self.fetch_default_atlas()
+
+        # Filter by soma
+        if filterby == "soma":
+            filtered_neurons_metadata = []
+            for neuron in neurons_metadata:
+                if neuron["brainArea_acronym"] is None:
+                    continue
+
+                # get ancestors of neuron's regions
+                try:
+                    neuron_region_ancestors = atlas.get_structure_ancestors(
+                        neuron["brainArea_acronym"]
+                    )
+                    neuron_region_ancestors.append(neuron["brainArea_acronym"])
+                except KeyError:
+                    # ignore if region is not found
+                    continue
+
+                # If any of the ancestors or itself are in the allowed regions, keep neuron.
+                if is_any_item_in_list(
+                    filter_regions, neuron_region_ancestors
+                ):
+                    filtered_neurons_metadata.append(neuron)
+
+            neurons = filtered_neurons_metadata
         else:
-            neurons = cleaned_neurons
+            neurons = neurons_metadata
+
+        logger.info(
+            "Selected %s neurons out of %s",
+            len(neurons),
+            len(neurons_metadata),
+        )
 
         return neurons
 
@@ -410,6 +460,7 @@ class MouseLightAPI(Paths):
 
         nmapi = NeuroMorpOrgAPI()
         nmapi._version = "Source-Version"
+        nmapi.neuromorphorg_cache = self.mouselight_cache
 
         neurons = []
 
