@@ -22,7 +22,7 @@ def request(url):
         raise ConnectionError(
             "You need to have an internet connection to send requests."
         )
-    response = requests.get(url)
+    response = requests.get(url, verify=False)
     if response.ok:
         return response
     else:
