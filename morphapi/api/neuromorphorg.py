@@ -1,4 +1,5 @@
 import os
+from functools import partial
 import logging
 
 from morphapi.utils.webqueries import request, connected_to_internet
@@ -6,6 +7,7 @@ from morphapi.paths_manager import Paths
 from morphapi.morphology.morphology import Neuron
 
 logger = logging.getLogger(__name__)
+request = partial(request, verify=False)
 
 
 class NeuroMorpOrgAPI(Paths):

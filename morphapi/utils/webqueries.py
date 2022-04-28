@@ -11,7 +11,7 @@ import time
 mouselight_base_url = "http://ml-neuronbrowser.janelia.org/"
 
 
-def request(url):
+def request(url, verify=True):
     """
     Sends a request to a url
 
@@ -22,7 +22,7 @@ def request(url):
         raise ConnectionError(
             "You need to have an internet connection to send requests."
         )
-    response = requests.get(url, verify=False)
+    response = requests.get(url, verify=verify)
     if response.ok:
         return response
     else:
