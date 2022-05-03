@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 from collections import namedtuple
-import numpy as np
 
 from vedo.shapes import Sphere, Tube
 from vedo import merge
@@ -82,7 +81,7 @@ class Neuron(NeuronCache):
 
     def repair_swc_file(self):
         """
-            Fixes this: https://github.com/BlueBrain/NeuroM/issues/835
+        Fixes this: https://github.com/BlueBrain/NeuroM/issues/835
         """
         with open(self.data_file, "r") as read:
             content = read.readlines()
@@ -245,12 +244,9 @@ class Neuron(NeuronCache):
         else:
             # Create soma actor
             neurites = {}
-            if not self.invert_dims:
-                coords = self.points["soma"].coords
-            else:
-                coords = self.points["soma"].coords
-                z, y, x = coords[0], coords[1], coords[2]
-                coords = np.hstack([x, y, z]).T
+            coords = self.points["soma"].coords
+            if self.invert_dims:
+                coords = coords[[2, 1, 0]]
 
             soma = Sphere(
                 pos=coords,
@@ -268,23 +264,13 @@ class Neuron(NeuronCache):
                             if not child.children:
                                 coords = child.points[:, COLS.XYZ]
                                 if self.invert_dims:
-                                    z, y, x = (
-                                        coords[:, 0],
-                                        coords[:, 1],
-                                        coords[:, 2],
-                                    )
-                                    coords = np.hstack([x, y, z]).T
+                                    coords = coords[:, [2, 1, 0]]
                                 actors.append(Tube(coords, r=neurite_radius))
                             else:
                                 for grandchild in child.children:
                                     coords = grandchild.points[:, COLS.XYZ]
                                     if self.invert_dims:
-                                        z, y, x = (
-                                            coords[:, 0],
-                                            coords[:, 1],
-                                            coords[:, 2],
-                                        )
-                                        coords = np.vstack([x, y, z]).T
+                                        coords = coords[:, [2, 1, 0]]
                                     actors.append(
                                         Tube(coords, r=neurite_radius)
                                     )

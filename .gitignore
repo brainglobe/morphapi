@@ -150,4 +150,5 @@ venv.bak/
 
 *.~lock.*
 
-
+# Test reports
+reports

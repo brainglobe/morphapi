@@ -1,5 +1,12 @@
+[build-system]
+requires = [
+    "setuptools",
+    "setuptools_scm[toml]",
+    "wheel",
+]
+
 [tool.black]
-target-version = ['py36', 'py37', 'py38']
+target-version = ['py36', 'py37', 'py38', 'py39']
 skip-string-normalization = false
 line-length = 79
 exclude = '''

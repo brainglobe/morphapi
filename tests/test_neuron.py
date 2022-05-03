@@ -58,7 +58,7 @@ def test_create_mesh_args(neuron):
 
 
 def test_empty_neuron(caplog):
-    file = listdir("tests/data")[0]
+    file = sorted(listdir("tests/data"))[0]
     neuron = Neuron(file, load_file=False)
 
     assert str(neuron.data_file) == "tests/data/example1.swc"
