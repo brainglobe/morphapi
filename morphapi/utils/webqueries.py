@@ -22,7 +22,17 @@ def request(url, verify=True):
         raise ConnectionError(
             "You need to have an internet connection to send requests."
         )
-    response = requests.get(url, verify=verify)
+
+    try:
+        _DEFAULT_CIPHERS = requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS
+        if not verify:
+            requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = (
+                _DEFAULT_CIPHERS + ":HIGH:!DH:!aNULL"
+            )
+        response = requests.get(url, verify=verify)
+    finally:
+        requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = _DEFAULT_CIPHERS
+
     if response.ok:
         return response
     else:
