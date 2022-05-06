@@ -1,13 +1,13 @@
 import logging
-from pathlib import Path
 from collections import namedtuple
-
-from vedo.shapes import Sphere, Tube
-from vedo import merge
-from vedo.colors import colorMap
+from pathlib import Path
 
 import neurom as nm
 from neurom.core.dataformat import COLS
+from vedo import merge
+from vedo.colors import colorMap
+from vedo.shapes import Sphere
+from vedo.shapes import Tube
 
 try:
     # For NeuroM >= 3
@@ -20,10 +20,9 @@ except ImportError:
         # For NeuroM >= 2, < 3
         from neurom import iter_sections
 
+import warnings
 
 from morphapi.morphology.cache import NeuronCache
-
-import warnings
 
 warnings.filterwarnings("ignore")
 

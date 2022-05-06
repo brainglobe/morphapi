@@ -2,7 +2,6 @@ from vedo import Plotter
 
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 
-
 api = NeuroMorpOrgAPI()
 
 # ---------------------------- Downloading metadata --------------------------- #

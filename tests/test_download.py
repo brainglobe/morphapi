@@ -1,9 +1,6 @@
-import sys
-
-sys.path.append("./")
+from morphapi.api.allenmorphology import AllenMorphology
 from morphapi.api.mouselight import MouseLightAPI
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
-from morphapi.api.allenmorphology import AllenMorphology
 
 
 def test_neuromorpho_download():

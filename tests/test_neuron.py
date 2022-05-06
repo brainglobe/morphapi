@@ -1,13 +1,11 @@
-import sys
-
-sys.path.append("./")
-
-import pytest
-import numpy as np
 from random import choice
+
+import numpy as np
+import pytest
+from vedo import Mesh
+
 from morphapi.morphology.morphology import Neuron
 from morphapi.utils.data_io import listdir
-from vedo import Mesh
 
 
 @pytest.fixture

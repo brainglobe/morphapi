@@ -1,12 +1,8 @@
-import sys
-
-sys.path.append("./")
-
-from morphapi.utils.data_io import connected_to_internet
-
-import requests
 import time
 
+import requests
+
+from morphapi.utils.data_io import connected_to_internet
 
 mouselight_base_url = "http://ml-neuronbrowser.janelia.org/"
 

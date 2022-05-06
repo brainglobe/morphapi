@@ -1,4 +1,5 @@
 import os
+
 import requests
 import yaml
 
@@ -65,10 +66,10 @@ def load_yaml(filepath):
 # ----------------------------- Internet queries ----------------------------- #
 def connected_to_internet(url="http://www.google.com/", timeout=5):
     """
-        Check that there is an internet connection
+    Check that there is an internet connection
 
-        :param url: url to use for testing (Default value = 'http://www.google.com/')
-        :param timeout:  timeout to wait for [in seconds] (Default value = 5)
+    :param url: url to use for testing (Default value = 'http://www.google.com/')
+    :param timeout:  timeout to wait for [in seconds] (Default value = 5)
     """
 
     try:
@@ -85,7 +86,7 @@ def connected_to_internet(url="http://www.google.com/", timeout=5):
 def flatten_list(lst):
     """
     Flattens a list of lists
-    
+
     :param lst: list
 
     """
@@ -102,8 +103,8 @@ def is_any_item_in_list(L1, L2):
     """
     Checks if an item in a list is in another  list
 
-    :param L1: 
-    :param L2: 
+    :param L1:
+    :param L2:
 
     """
     # checks if any item of L1 is also in L2 and returns false otherwise

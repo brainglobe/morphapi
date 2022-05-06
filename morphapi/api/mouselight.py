@@ -2,15 +2,16 @@ import logging
 from collections import namedtuple
 
 import pandas as pd
-
 from bg_atlasapi import BrainGlobeAtlas
 from retry import retry
 
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 from morphapi.morphology.morphology import Neuron
 from morphapi.paths_manager import Paths
-from morphapi.utils.data_io import is_any_item_in_list, flatten_list
-from morphapi.utils.webqueries import post_mouselight, mouselight_base_url
+from morphapi.utils.data_io import flatten_list
+from morphapi.utils.data_io import is_any_item_in_list
+from morphapi.utils.webqueries import mouselight_base_url
+from morphapi.utils.webqueries import post_mouselight
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 def mouselight_api_info():
     """
-        Get the number of cells available in the database
+    Get the number of cells available in the database
     """
     # Get info from the ML API
     url = mouselight_base_url + "graphql"
@@ -49,8 +50,8 @@ def mouselight_api_info():
 
 def mouselight_get_brainregions():
     """
-        Get metadata about the brain brain regions as they are known by Janelia's Mouse Light.
-        IDs and Names sometimes differ from Allen's CCF.
+    Get metadata about the brain brain regions as they are known by Janelia's Mouse Light.
+    IDs and Names sometimes differ from Allen's CCF.
     """
 
     # Download metadata about brain regions from the ML API
@@ -261,10 +262,10 @@ def fetch_atlas(atlas_name="allen_mouse_25um"):
 class MouseLightAPI(Paths):
     def __init__(self, base_dir=None, **kwargs):
         """
-            Handles the download of neurons morphology data from the Mouse Light project
+        Handles the download of neurons morphology data from the Mouse Light project
 
-            :param base_dir: path to directory to use for saving data (default value None)
-            :param kwargs: can be used to pass path to individual data folders. See morphapi/utils /paths_manager.py
+        :param base_dir: path to directory to use for saving data (default value None)
+        :param kwargs: can be used to pass path to individual data folders. See morphapi/utils /paths_manager.py
         """
         Paths.__init__(self, base_dir=base_dir, **kwargs)
 

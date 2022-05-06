@@ -1,9 +1,13 @@
 import os
 
-from vedo import write, load, Mesh, merge
+from vedo import Mesh
+from vedo import load
+from vedo import merge
+from vedo import write
 
 from morphapi.paths_manager import Paths
-from morphapi.utils.data_io import save_yaml, load_yaml
+from morphapi.utils.data_io import load_yaml
+from morphapi.utils.data_io import save_yaml
 
 
 class NeuronCache(Paths):
@@ -17,7 +21,7 @@ class NeuronCache(Paths):
 
     def __init__(self, **kwargs):
         """
-            Initialise API interaction and fetch metadata of neurons in the Allen Database. 
+        Initialise API interaction and fetch metadata of neurons in the Allen Database.
         """
         super().__init__(**kwargs)  # path to data caches
 
