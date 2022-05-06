@@ -1,20 +1,20 @@
-import pandas as pd
-from pathlib import Path
-import zipfile
 import shutil
+import zipfile
+from pathlib import Path
+
+import pandas as pd
+from bg_atlasapi import BrainGlobeAtlas
+from bg_atlasapi.utils import retrieve_over_http
+from bg_space import SpaceConvention
 from rich.progress import track
 
+from morphapi.morphology.morphology import Neuron
 from morphapi.paths_manager import Paths
 from morphapi.utils.data_io import connected_to_internet
-from morphapi.morphology.morphology import Neuron
-from bg_space import SpaceConvention
-from bg_atlasapi.utils import retrieve_over_http
-from bg_atlasapi import BrainGlobeAtlas
 
 
 def soma_coords_from_file(file_path):
-    """Compile dictionary with traced cells origins.
-    """
+    """Compile dictionary with traced cells origins."""
     # Read first line after comment for soma ID:
     line_start = "#"
     with open(file_path, "r") as file:
@@ -57,8 +57,7 @@ def fix_mpin_swgfile(file_path, fixed_file_path=None):
 
 
 class MpinMorphologyAPI(Paths):
-    """Handles the download of neuronal morphology data from the MPIN database.
-    """
+    """Handles the download of neuronal morphology data from the MPIN database."""
 
     def __init__(self, *args, **kwargs):
         Paths.__init__(self, *args, **kwargs)
@@ -72,8 +71,7 @@ class MpinMorphologyAPI(Paths):
 
     @property
     def neurons_df(self):
-        """Table with all neurons positions and soma regions.
-        """
+        """Table with all neurons positions and soma regions."""
         if self._neurons_df is None:
             # Generate table with soma position to query by region:
             atlas = BrainGlobeAtlas("mpin_zfish_1um", print_authors=False)
@@ -109,7 +107,7 @@ class MpinMorphologyAPI(Paths):
 
     def load_neurons(self, neuron_id, **kwargs):
         """
-            Load individual neurons given their IDs
+        Load individual neurons given their IDs
         """
         if not isinstance(neuron_id, list):
             neuron_id = [neuron_id]
@@ -122,15 +120,17 @@ class MpinMorphologyAPI(Paths):
                 / self.neurons_df.loc[nid].filename
             )
             to_return.append(
-                Neuron(filepath, neuron_name="mpin_" + str(nid), **kwargs,)
+                Neuron(
+                    filepath,
+                    neuron_name="mpin_" + str(nid),
+                    **kwargs,
+                )
             )
 
         return to_return
 
     def download_dataset(self):
-        """Dowload dataset from Kunst et al 2019.
-
-        """
+        """Dowload dataset from Kunst et al 2019."""
         if not connected_to_internet():
             raise ValueError(
                 "An internet connection is required to download the dataset"

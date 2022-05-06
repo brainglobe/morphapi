@@ -1,5 +1,6 @@
-from morphapi.api.allenmorphology import AllenMorphology
 from vedo import Plotter
+
+from morphapi.api.allenmorphology import AllenMorphology
 
 am = AllenMorphology()
 

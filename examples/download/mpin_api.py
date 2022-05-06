@@ -2,7 +2,6 @@ from vedo import Plotter
 
 from morphapi.api.mpin_celldb import MpinMorphologyAPI
 
-
 api = MpinMorphologyAPI()
 
 # ----------------------------- Download dataset ----------------------------- #

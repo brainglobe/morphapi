@@ -1,11 +1,8 @@
 import logging
-import sys
-
-sys.path.append("./")
-
 import os
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 
 try:
     from allensdk.core.cell_types_cache import CellTypesCache
@@ -14,19 +11,19 @@ except ModuleNotFoundError:
         'You need to install the allen sdk package to use AllenMorphology:  "pip install allensdk"'
     )
 
+from morphapi.morphology.morphology import Neuron
 from morphapi.paths_manager import Paths
 from morphapi.utils.data_io import connected_to_internet
-from morphapi.morphology.morphology import Neuron
 
 logger = logging.getLogger(__name__)
 
 
 class AllenMorphology(Paths):
-    """ Handles the download of neuronal morphology data from the Allen database. """
+    """Handles the download of neuronal morphology data from the Allen database."""
 
     def __init__(self, *args, **kwargs):
         """
-            Initialise API interaction and fetch metadata of neurons in the Allen Database.
+        Initialise API interaction and fetch metadata of neurons in the Allen Database.
         """
         if not connected_to_internet():
             raise ConnectionError(
@@ -57,7 +54,7 @@ class AllenMorphology(Paths):
 
     def get_downloaded_neurons(self):
         """
-            Get's the path to files of downloaded neurons
+        Get's the path to files of downloaded neurons
         """
         return [
             os.path.join(self.allen_morphology_cache, f)
@@ -67,7 +64,7 @@ class AllenMorphology(Paths):
 
     def build_filepath(self, neuron_id):
         """
-            Build a filepath from neuron's metadata.
+        Build a filepath from neuron's metadata.
         """
         return os.path.join(
             self.allen_morphology_cache, "{}.swc".format(neuron_id)

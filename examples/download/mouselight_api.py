@@ -2,7 +2,6 @@ from vedo import Plotter
 
 from morphapi.api.mouselight import MouseLightAPI
 
-
 # ---------------------------- Downloading neurons --------------------------- #
 mlapi = MouseLightAPI()
 

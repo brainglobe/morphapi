@@ -1,2 +1,5 @@
 [run]
-source = morphapi
+source =
+	morphapi
+	*/morphapi
+	*/site-packages/morphapi
