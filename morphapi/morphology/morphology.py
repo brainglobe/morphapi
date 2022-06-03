@@ -20,11 +20,7 @@ except ImportError:
         # For NeuroM >= 2, < 3
         from neurom import iter_sections
 
-import warnings
-
 from morphapi.morphology.cache import NeuronCache
-
-warnings.filterwarnings("ignore")
 
 logger = logging.getLogger(__name__)
 
