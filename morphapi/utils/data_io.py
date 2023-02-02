@@ -64,11 +64,11 @@ def load_yaml(filepath):
 
 
 # ----------------------------- Internet queries ----------------------------- #
-def connected_to_internet(url="http://www.google.com/", timeout=5):
+def connected_to_internet(url="https://www.google.com/", timeout=5):
     """
     Check that there is an internet connection
 
-    :param url: url to use for testing (Default value = 'http://www.google.com/')
+    :param url: url to use for testing (Default value = 'https://www.google.com/')
     :param timeout:  timeout to wait for [in seconds] (Default value = 5)
     """
 

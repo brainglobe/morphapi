@@ -4,7 +4,7 @@ import requests
 
 from morphapi.utils.data_io import connected_to_internet
 
-mouselight_base_url = "http://ml-neuronbrowser.janelia.org/"
+mouselight_base_url = "https://ml-neuronbrowser.janelia.org/"
 
 
 def request(url, verify=True):
@@ -48,7 +48,7 @@ def query_mouselight(query):
             "You need an internet connection for API queries, sorry."
         )
 
-    base_url = "http://ml-neuronbrowser.janelia.org/"
+    base_url = "https://ml-neuronbrowser.janelia.org/"
 
     full_query = base_url + query
 
@@ -108,7 +108,7 @@ def post_mouselight(url, query=None, clean=False, attempts=3):
         if request is None:
             raise ConnectionError(
                 "\n\nMouseLight API query failed with error message:\n{}.\
-                        \nPerhaps the server is down, visit 'http://ml-neuronbrowser.janelia.org' to find out.".format(
+                        \nPerhaps the server is down, visit 'https://ml-neuronbrowser.janelia.org' to find out.".format(
                     exception
                 )
             )
