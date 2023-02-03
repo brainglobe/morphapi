@@ -11,7 +11,6 @@ requirements = [
     "bg_atlasapi",
     "imagecodecs; python_version>='3.9'",
     "neurom<4",
-    "morphio<3.3; python_version=='3.6'",
     "numpy",
     "pandas",
     "pyyaml>=5.3",
@@ -43,7 +42,7 @@ setup(
             "allensdk",
         ],
     },
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     packages=find_namespace_packages(
         exclude=("Installation", "Meshes", "Metadata", "Screenshots")
     ),
