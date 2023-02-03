@@ -12,7 +12,7 @@ request_no_ssl = partial(request, verify=False)
 
 
 class NeuroMorpOrgAPI(Paths):
-    _base_url = "http://neuromorpho.org/api/neuron"
+    _base_url = "https://neuromorpho.org/api/neuron"
 
     _version = "CNG version"  # which swc version, standardized or original
 
@@ -26,7 +26,7 @@ class NeuroMorpOrgAPI(Paths):
 
         # Check that neuromorpho.org is not down
         try:
-            request_no_ssl("http://neuromorpho.org/api/health")
+            request_no_ssl("https://neuromorpho.org/api/health")
         except Exception as e:
             raise ConnectionError(
                 f"It seems that neuromorphos API is down: {e}"
@@ -51,7 +51,7 @@ class NeuroMorpOrgAPI(Paths):
         """
         Uses the neuromorpho API to download metadata about neurons.
         Criteri can be used to restrict the search to neurons of interest/
-        http://neuromorpho.org/apiReference.html
+        https://neuromorpho.org/apiReference.html
 
         Neuromorpho.org  paginates it's requests so not all neurons metadata
         can be returned at once
@@ -160,9 +160,9 @@ class NeuroMorpOrgAPI(Paths):
             if not os.path.isfile(filepath):
                 # Download and write to file
                 if self._version == "CNG version":
-                    url = f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/CNG version/{neuron['neuron_name']}.CNG.swc"
+                    url = f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/CNG version/{neuron['neuron_name']}.CNG.swc"
                 else:
-                    url = f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/{self._version}/{neuron['neuron_name']}.swc"
+                    url = f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/{self._version}/{neuron['neuron_name']}.swc"
 
                 try:
                     req = request_no_ssl(url)
