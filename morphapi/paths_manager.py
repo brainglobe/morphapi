@@ -31,7 +31,7 @@ class Paths:
         if base_dir is None:
             self.base_dir = Path.home() / ".morphapi"
         else:
-            self.base_dir = base_dir
+            self.base_dir = Path(base_dir)
 
         self.base_dir.mkdir(exist_ok=True)
 
