@@ -1,6 +1,5 @@
 import logging
 import os
-import urllib
 from functools import partial
 
 from morphapi.morphology.morphology import Neuron
@@ -91,7 +90,7 @@ class NeuroMorpOrgAPI(Paths):
 
             if n > 0:
                 url += "&fq="
-            url += f"{crit}:" + urllib.parse.quote(f"{val}")
+            url += f"{crit}:{val}"
 
         url += f"&size={int(size)}&page={int(page)}"
         req = request_no_ssl(url)
