@@ -1,10 +1,14 @@
+from pathlib import Path
+
 from morphapi.api.allenmorphology import AllenMorphology
 from morphapi.api.mouselight import MouseLightAPI
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 
 
-def test_neuromorpho_download():
-    api = NeuroMorpOrgAPI()
+def test_neuromorpho_download(tmpdir):
+    api = NeuroMorpOrgAPI(base_dir=tmpdir)
+    cache_path = Path(api.neuromorphorg_cache)
+
     metadata, _ = api.get_neurons_metadata(
         size=2,  # Can get the metadata for up to 500 neurons at the time
         species="mouse",
@@ -15,15 +19,34 @@ def test_neuromorpho_download():
     if len(metadata) != 2:
         raise ValueError("Incorrect metadata length")
 
+    assert len(list(cache_path.iterdir())) == 0
     neurons = api.download_neurons(metadata)
 
-    if len(neurons) != len(metadata):
-        raise ValueError
+    assert len(neurons) == len(metadata)
+    assert len(list(cache_path.iterdir())) == 2
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
     # Test no load
     assert api.download_neurons(metadata, load_neurons=False)[0].points is None
+    assert len(list(cache_path.iterdir())) == 2
+
+    # Test using neuron names
+    assert (
+        api.download_neurons(
+            metadata, load_neurons=False, use_neuron_names=True
+        )[0].points
+        is None
+    )
+    assert len(list(cache_path.iterdir())) == 4
+
+    cache_files = list(cache_path.iterdir())
+    assert sorted([i.name for i in cache_files]) == [
+        "10075.swc",
+        "10076.swc",
+        "C1q-Cell7-40x.swc",
+        "Ctrl-Cell3-40x.swc",
+    ]
 
     # Test failure
     metadata[0]["neuron_id"] = "BAD ID"
@@ -34,8 +57,8 @@ def test_neuromorpho_download():
     assert neurons[0].points is None
 
 
-def test_mouselight_download():
-    mlapi = MouseLightAPI()
+def test_mouselight_download(tmpdir):
+    mlapi = MouseLightAPI(base_dir=tmpdir)
 
     neurons_metadata = mlapi.fetch_neurons_metadata(
         filterby="soma", filter_regions=["MOs"]
@@ -87,8 +110,8 @@ def test_mouselight_download():
     assert filtered_neurons_metadata == filtered_neurons_metadata_atlas
 
 
-def test_allen_morphology_download():
-    am = AllenMorphology()
+def test_allen_morphology_download(tmpdir):
+    am = AllenMorphology(base_dir=tmpdir)
 
     # Select some mouse neurons in the primary visual cortex
     neurons_df = am.neurons.loc[

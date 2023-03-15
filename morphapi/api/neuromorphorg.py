@@ -129,16 +129,25 @@ class NeuroMorpOrgAPI(Paths):
         return os.path.join(self.neuromorphorg_cache, f"{neuron_id}.swc")
 
     def download_neurons(
-        self, neurons, _name=None, load_neurons=True, **kwargs
+        self,
+        neurons,
+        _name=None,
+        load_neurons=True,
+        use_neuron_names=False,
+        **kwargs,
     ):
         """
         Downloads neuronal morphological data and saves it to .swc files.
         It then returns a list of Neuron instances with morphological data for each neuron.
 
         :param neurons: list of neurons metadata (as returned by one of the functions
-                    used to fetch metadata)
+            used to fetch metadata)
         :param _name: used internally to save cached neurons with a different prefix when the
-                class is used to download neurons for other APIs
+            class is used to download neurons for other APIs
+        :param load_neurons: if set to True, the neurons are loaded into a
+            `morphapi.morphology.morphology.Neuron` object and returned
+        :param use_neuron_names: if set to True, the filenames use the names of the neurons instead
+            of their IDs
         """
         if not isinstance(neurons, (list, tuple)):
             neurons = [neurons]
@@ -154,7 +163,12 @@ class NeuroMorpOrgAPI(Paths):
             except KeyError:
                 pass
 
-            filepath = self.build_filepath(neuron["neuron_id"])
+            if use_neuron_names:
+                filepath = self.build_filepath(
+                    neuron.get("neuron_name", neuron["neuron_id"])
+                )
+            else:
+                filepath = self.build_filepath(neuron["neuron_id"])
             load_current_neuron = load_neurons
 
             if not os.path.isfile(filepath):
