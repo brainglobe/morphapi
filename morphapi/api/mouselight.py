@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 """
-    Collections of functions to query http://ml-neuronbrowser.janelia.org/ and get data about either the status of the API,
+    Collections of functions to query https://ml-neuronbrowser.janelia.org/ and get data about either the status of the API,
     the brain regions or the neurons available.
-    Queries are sent by sending POST requests to http://ml-neuronbrowser.janelia.org/graphql
+    Queries are sent by sending POST requests to https://ml-neuronbrowser.janelia.org/graphql
     with a string query.
 """
 
