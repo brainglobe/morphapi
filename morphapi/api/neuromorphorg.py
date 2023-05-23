@@ -32,10 +32,18 @@ class NeuroMorpOrgAPI(Paths):
                 f"It seems that neuromorphos API is down: {e}"
             )
 
-        # Fields contains the types of fields that can be used to restrict queries
-        self.fields = request_no_ssl(self._base_url + "/fields").json()[
-            "Neuron Fields"
-        ]
+        self._fields = None
+
+    @property
+    def fields(self):
+        """
+        Fields contains the types of fields that can be used to restrict queries
+        """
+        if self._fields is None:
+            self._fields = request_no_ssl(self._base_url + "/fields").json()[
+                "Neuron Fields"
+            ]
+        return self._fields
 
     def get_fields_values(self, field):
         """
@@ -81,31 +89,39 @@ class NeuroMorpOrgAPI(Paths):
 
         url = self._base_url + "/select?q="
 
-        for n, (crit, val) in enumerate(criteria.items()):
-            if crit not in self.fields:
-                raise ValueError(
-                    f"Query criteria {crit} not in available fields: {self.fields}"
-                )
-            elif val not in self.get_fields_values(crit):
-                raise ValueError(
-                    f"Query criteria value {val} for field {crit} not valid."
-                    + f"Valid values include: {self.get_fields_values(crit)}"
-                )
-
+        for num, (crit, val) in enumerate(criteria.items()):
             if isinstance(val, list):
                 raise NotImplementedError("Need to join the list")
 
-            if n > 0:
+            if num > 0:
                 url += "&fq="
             url += f"{crit}:{val}"
 
         url += f"&size={int(size)}&page={int(page)}"
-        req = request_no_ssl(url)
 
-        if not req.ok:
-            raise ValueError(f"Invalid query with url: {url}")
-        else:
+        try:
+            req = request_no_ssl(url)
             neurons = req.json()
+            valid_url = req.ok and "error" not in neurons
+        except ValueError:
+            valid_url = False
+
+        if not valid_url:
+            # Check each criteria
+            for crit, val in criteria.items():
+                if crit not in self.fields:
+                    raise ValueError(
+                        f"Query criteria {crit} not in available fields: {self.fields}"
+                    )
+                field_values = self.get_fields_values(crit)
+                if val not in field_values:
+                    raise ValueError(
+                        f"Query criteria value {val} for field {crit} not valid."
+                        + f"Valid values include: {field_values}"
+                    )
+
+            # If all criteria look valid, then raise a generic error
+            raise ValueError(f"Invalid query with url: {url}")
 
         page = neurons["page"]
         neurons = neurons["_embedded"]["neuronResources"]
