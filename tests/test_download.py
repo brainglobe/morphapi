@@ -56,6 +56,9 @@ def test_neuromorpho_download(tmpdir):
     assert neurons[0].data_file.name == "BAD ID.swc"
     assert neurons[0].points is None
 
+    # Test get_fields_values
+    assert len(api.get_fields_values("strain")) > 1000
+
 
 def test_mouselight_download(tmpdir):
     mlapi = MouseLightAPI(base_dir=tmpdir)

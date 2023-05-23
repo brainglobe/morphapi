@@ -41,11 +41,18 @@ class NeuroMorpOrgAPI(Paths):
         """
         Returns the list of allowed values for a given query field
         """
-        return list(
-            request_no_ssl(self._base_url + f"/fields/{field}").json()[
-                "fields"
-            ]
-        )
+        current_page = 0
+        max_page = 1
+        values = []
+        while current_page < max_page:
+            req = request_no_ssl(
+                self._base_url
+                + f"/fields/{field}?&size=1000&page={current_page}"
+            ).json()
+            values.extend(req["fields"])
+            max_page = req.get("page", {}).get("totalPages", max_page)
+            current_page += 1
+        return values
 
     def get_neurons_metadata(self, size=100, page=0, **criteria):
         """
