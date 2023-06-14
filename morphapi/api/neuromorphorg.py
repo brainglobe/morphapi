@@ -1,6 +1,5 @@
 import logging
 import os
-from functools import partial
 
 from morphapi.morphology.morphology import Neuron
 from morphapi.paths_manager import Paths
@@ -8,7 +7,6 @@ from morphapi.utils.webqueries import connected_to_internet
 from morphapi.utils.webqueries import request
 
 logger = logging.getLogger(__name__)
-request_no_ssl = partial(request, verify=True)
 
 
 class NeuroMorpOrgAPI(Paths):
@@ -26,7 +24,7 @@ class NeuroMorpOrgAPI(Paths):
 
         # Check that neuromorpho.org is not down
         try:
-            request_no_ssl("https://neuromorpho.org/api/health")
+            request("https://neuromorpho.org/api/health")
         except Exception as e:
             raise ConnectionError(
                 f"It seems that neuromorphos API is down: {e}"
@@ -40,7 +38,7 @@ class NeuroMorpOrgAPI(Paths):
         Fields contains the types of fields that can be used to restrict queries
         """
         if self._fields is None:
-            self._fields = request_no_ssl(self._base_url + "/fields").json()[
+            self._fields = request(self._base_url + "/fields").json()[
                 "Neuron Fields"
             ]
         return self._fields
@@ -53,7 +51,7 @@ class NeuroMorpOrgAPI(Paths):
         max_page = 1
         values = []
         while current_page < max_page:
-            req = request_no_ssl(
+            req = request(
                 self._base_url
                 + f"/fields/{field}?&size=1000&page={current_page}"
             ).json()
@@ -100,7 +98,7 @@ class NeuroMorpOrgAPI(Paths):
         url += f"&size={int(size)}&page={int(page)}"
 
         try:
-            req = request_no_ssl(url)
+            req = request(url)
             neurons = req.json()
             valid_url = req.ok and "error" not in neurons
         except ValueError:
@@ -137,13 +135,13 @@ class NeuroMorpOrgAPI(Paths):
         """
         Get a neuron's metadata given it's id number
         """
-        return request_no_ssl(self._base_url + f"/id/{nid}").json()
+        return request(self._base_url + f"/id/{nid}").json()
 
     def get_neuron_by_name(self, nname):
         """
         Get a neuron's metadata given it's name
         """
-        return request_no_ssl(self._base_url + f"/name/{nname}").json()
+        return request(self._base_url + f"/name/{nname}").json()
 
     def build_filepath(self, neuron_id):
         """
@@ -202,7 +200,7 @@ class NeuroMorpOrgAPI(Paths):
                     url = f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/{self._version}/{neuron['neuron_name']}.swc"
 
                 try:
-                    req = request_no_ssl(url)
+                    req = request(url)
                     with open(filepath, "w") as f:
                         f.write(req.content.decode("utf-8"))
                 except ValueError as exc:
