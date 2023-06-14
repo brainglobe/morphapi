@@ -48,9 +48,7 @@ def query_mouselight(query):
             "You need an internet connection for API queries, sorry."
         )
 
-    base_url = "https://ml-neuronbrowser.janelia.org/"
-
-    full_query = base_url + query
+    full_query = mouselight_base_url + query
 
     # send the query, package the return argument as a json tree
     response = requests.get(full_query)
@@ -108,8 +106,8 @@ def post_mouselight(url, query=None, clean=False, attempts=3):
         if request is None:
             raise ConnectionError(
                 "\n\nMouseLight API query failed with error message:\n{}.\
-                        \nPerhaps the server is down, visit 'https://ml-neuronbrowser.janelia.org' to find out.".format(
-                    exception
+                        \nPerhaps the server is down, visit '{}' to find out.".format(
+                    exception, mouselight_base_url
                 )
             )
     else:
