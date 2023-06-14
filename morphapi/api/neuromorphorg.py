@@ -8,7 +8,7 @@ from morphapi.utils.webqueries import connected_to_internet
 from morphapi.utils.webqueries import request
 
 logger = logging.getLogger(__name__)
-request_no_ssl = partial(request, verify=False)
+request_no_ssl = partial(request, verify=True)
 
 
 class NeuroMorpOrgAPI(Paths):

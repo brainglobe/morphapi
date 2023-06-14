@@ -112,7 +112,7 @@ class Neuron(NeuronCache):
 
         self.repair_swc_file()
 
-        nrn = nm.load_neuron(self.data_file)
+        nrn = nm.load_morphology(self.data_file)
 
         # Get position and radius of some
         soma_pos = nrn.soma.points[0, :3]
@@ -247,7 +247,7 @@ class Neuron(NeuronCache):
                 pos=coords,
                 r=self.points["soma"].radius * soma_radius,
                 c=soma_color,
-            ).computeNormals()
+            ).compute_normals()
             neurites["soma"] = soma.clone().c(soma_color)
 
             # Create neurites actors
@@ -273,7 +273,7 @@ class Neuron(NeuronCache):
                 if actors:
                     neurites[ntype] = merge(
                         actors
-                    ).computeNormals()  # .smoothMLS2D(f=0.1)
+                    ).compute_normals()  # .smoothMLS2D(f=0.1)
                 else:
                     neurites[ntype] = None
 
@@ -281,7 +281,7 @@ class Neuron(NeuronCache):
             actors = [
                 act.clone() for act in neurites.values() if act is not None
             ]
-            whole_neuron = merge(actors).clean().computeNormals()
+            whole_neuron = merge(actors).clean().compute_normals()
 
             # Write to cache
             to_write = neurites.copy()
