@@ -1,5 +1,7 @@
+import re
 from pathlib import Path
 
+import pytest
 from morphapi.api.allenmorphology import AllenMorphology
 from morphapi.api.mouselight import MouseLightAPI
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
@@ -8,6 +10,27 @@ from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 def test_neuromorpho_download(tmpdir):
     api = NeuroMorpOrgAPI(base_dir=tmpdir)
     cache_path = Path(api.neuromorphorg_cache)
+
+    # Test get_fields_values
+    assert len(api.get_fields_values("strain")) > 1000
+
+    # Test get_neurons_metadata
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"Query criteria UNKNOWN_FIELD not in available fields: {api.fields}"
+        ),
+    ):
+        api.get_neurons_metadata(UNKNOWN_FIELD=0)
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "Query criteria value UNKNOWN_VALUE for field strain not valid."
+            f"Valid values include: {api.get_fields_values('strain')}"
+        ),
+    ):
+        api.get_neurons_metadata(strain="UNKNOWN_VALUE")
 
     metadata, _ = api.get_neurons_metadata(
         size=2,  # Can get the metadata for up to 500 neurons at the time
@@ -19,6 +42,7 @@ def test_neuromorpho_download(tmpdir):
     if len(metadata) != 2:
         raise ValueError("Incorrect metadata length")
 
+    # Test download_neurons
     assert len(list(cache_path.iterdir())) == 0
     neurons = api.download_neurons(metadata)
 
@@ -55,9 +79,6 @@ def test_neuromorpho_download(tmpdir):
 
     assert neurons[0].data_file.name == "BAD ID.swc"
     assert neurons[0].points is None
-
-    # Test get_fields_values
-    assert len(api.get_fields_values("strain")) > 1000
 
 
 def test_mouselight_download(tmpdir):
