@@ -16,7 +16,7 @@ requirements = [
     "pyyaml>=5.3",
     "retry",
     "rich",
-    "vedo>=2020.3.3",
+    "vedo>=2021.0.3",
     "vtk",
 ]
 
