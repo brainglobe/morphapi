@@ -10,13 +10,13 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
 requirements = [
     "bg_atlasapi",
     "imagecodecs; python_version>='3.9'",
-    "neurom<4",
+    "neurom>=3,<4",
     "numpy",
     "pandas",
     "pyyaml>=5.3",
     "retry",
     "rich",
-    "vedo>=2020.3.3",
+    "vedo>=2021.0.3",
     "vtk",
 ]
 
