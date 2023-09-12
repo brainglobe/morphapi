@@ -217,11 +217,11 @@ class Neuron(NeuronCache):
             or not neurite_radius > 0
         ):
             raise ValueError(
-                f"Invalid value for parameter neurite_radius, should be a float > 0"
+                "Invalid value for parameter neurite_radius, should be a float > 0"
             )
         if not isinstance(soma_radius, (int, float)) or not soma_radius > 0:
             raise ValueError(
-                f"Invalid value for parameter soma_radius, should be a float > 0"
+                "Invalid value for parameter soma_radius, should be a float > 0"
             )
         # prepare params dict for caching
         _params = dict(neurite_radius=neurite_radius, soma_radius=soma_radius)
