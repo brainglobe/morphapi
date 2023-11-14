@@ -1,10 +1,22 @@
 import time
 
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.ssl_ import create_urllib3_context
 
 from morphapi.utils.data_io import connected_to_internet
 
 mouselight_base_url = "https://ml-neuronbrowser.janelia.org/"
+CIPHERS = ":HIGH:!DH:!aNULL"
+
+
+class NoDhAdapter(HTTPAdapter):
+    """A TransportAdapter that disables DH cipher in Requests."""
+
+    def init_poolmanager(self, *args, **kwargs):
+        context = create_urllib3_context(ciphers=CIPHERS)
+        kwargs["ssl_context"] = context
+        return super(NoDhAdapter, self).init_poolmanager(*args, **kwargs)
 
 
 def request(url, verify=True):
@@ -19,14 +31,9 @@ def request(url, verify=True):
             "You need to have an internet connection to send requests."
         )
 
-    try:
-        _DEFAULT_CIPHERS = requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS
-        requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = (
-            _DEFAULT_CIPHERS + ":HIGH:!DH:!aNULL"
-        )
-        response = requests.get(url, verify=verify)
-    finally:
-        requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = _DEFAULT_CIPHERS
+    session = requests.Session()
+    session.mount("https://", NoDhAdapter())
+    response = session.get(url)
 
     if response.ok:
         return response
