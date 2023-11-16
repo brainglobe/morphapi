@@ -5,7 +5,7 @@ from pathlib import Path
 import neurom as nm
 from neurom.core.dataformat import COLS
 from vedo import merge
-from vedo.colors import colorMap
+from vedo.colors import color_map
 from vedo.shapes import Sphere
 from vedo.shapes import Tube
 
@@ -172,7 +172,7 @@ class Neuron(NeuronCache):
             if neuron_number is None:
                 neuron_number = 0
 
-            soma_color = colorMap(
+            soma_color = color_map(
                 neuron_number, name=cmap, vmin=cmap_lims[0], vmax=cmap_lims[1]
             )
             apical_dendrites_color = (
