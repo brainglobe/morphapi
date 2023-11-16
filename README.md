@@ -7,4 +7,4 @@ morphological reconstructions from publicly available datasets.
 Please see the [documentation](https://brainglobe.info/documentation/morphapi/index.html)
 
 ## Contributing
-Contributions to morphapi are more than welcome. Please see the [developers guide](https://brainglobe.info/developers/index.html).
+Contributions to morphapi are more than welcome. Please see the [developers guide](https://brainglobe.info/community/developers/index.html).
