@@ -1,3 +1,11 @@
+"""
+Collections of functions to query https://ml-neuronbrowser.janelia.org/
+and get data about either the status of the API, the brain regions or the
+neurons available.
+Queries are sent by sending POST requests to
+https://ml-neuronbrowser.janelia.org/graphql with a string query.
+"""
+
 import logging
 from collections import namedtuple
 
@@ -8,24 +16,15 @@ from retry import retry
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 from morphapi.morphology.morphology import Neuron
 from morphapi.paths_manager import Paths
-from morphapi.utils.data_io import flatten_list
-from morphapi.utils.data_io import is_any_item_in_list
-from morphapi.utils.webqueries import mouselight_base_url
-from morphapi.utils.webqueries import post_mouselight
+from morphapi.utils.data_io import flatten_list, is_any_item_in_list
+from morphapi.utils.webqueries import mouselight_base_url, post_mouselight
 
 logger = logging.getLogger(__name__)
 
 
-"""
-    Collections of functions to query https://ml-neuronbrowser.janelia.org/ and get data about either the status of the API,
-    the brain regions or the neurons available.
-    Queries are sent by sending POST requests to https://ml-neuronbrowser.janelia.org/graphql
-    with a string query.
-"""
-
-# ---------------------------------------------------------------------------- #
-#                                  QUERY UTILS                                 #
-# ---------------------------------------------------------------------------- #
+# -------------------------------------------------------------------------- #
+#                                  QUERY UTILS                               #
+# -------------------------------------------------------------------------- #
 
 
 def mouselight_api_info():
@@ -50,7 +49,8 @@ def mouselight_api_info():
 
 def mouselight_get_brainregions():
     """
-    Get metadata about the brain brain regions as they are known by Janelia's Mouse Light.
+    Get metadata about the brain regions as they are known by
+    Janelia's Mouse Light.
     IDs and Names sometimes differ from Allen's CCF.
     """
 
@@ -85,7 +85,8 @@ def mouselight_get_brainregions():
 
 def mouselight_structures_identifiers():
     """
-    When the data are downloaded as SWC, each node has a structure identifier ID to tell if it's soma, axon or dendrite.
+    When the data are downloaded as SWC, each node has a structure
+    identifier ID to tell if it's soma, axon or dendrite.
     This function returns the ID number --> structure table.
     """
 
@@ -114,11 +115,15 @@ def mouselight_structures_identifiers():
 
 def make_query(filterby=None, filter_regions=None, invert=False):
     """
-    Constructs the strings used to submit graphql queries to the mouse light api
+    Constructs the strings used to submit graphql queries to the mouse
+    light api
 
-    :param filterby: str, soma, axon on dendrite. Search by neurite structure (Default value = None)
-    :param filter_regions:  list, tuple. list of strings. Acronyms of brain regions to use for query (Default value = None)
-    :param invert:  If true the inverse of the query is return (i.e. the neurons NOT in a brain region) (Default value = False)
+    :param filterby: str, soma, axon on dendrite. Search by neurite
+    structure (Default value = None)
+    :param filter_regions:  list, tuple. list of strings. Acronyms of brain
+    regions to use for query (Default value = None)
+    :param invert:  If true the inverse of the query is return (i.e., the
+    neurons NOT in a brain region) (Default value = False)
 
     """
     searchneurons = """
@@ -254,18 +259,21 @@ def fetch_atlas(atlas_name="allen_mouse_25um"):
     return BrainGlobeAtlas(atlas_name)
 
 
-# ---------------------------------------------------------------------------- #
-#                                  MAIN CLASS                                  #
-# ---------------------------------------------------------------------------- #
+# -------------------------------------------------------------------------- #
+#                                  MAIN CLASS                                #
+# -------------------------------------------------------------------------- #
 
 
 class MouseLightAPI(Paths):
     def __init__(self, base_dir=None, **kwargs):
         """
-        Handles the download of neurons morphology data from the Mouse Light project
+        Handles the download of neurons morphology data from the
+        Mouse Light project
 
-        :param base_dir: path to directory to use for saving data (default value None)
-        :param kwargs: can be used to pass path to individual data folders. See morphapi/utils /paths_manager.py
+        :param base_dir: path to directory to use for saving data
+        (default value None)
+        :param kwargs: can be used to pass path to individual
+        data folders. See morphapi/utils /paths_manager.py
         """
         Paths.__init__(self, base_dir=base_dir, **kwargs)
 
@@ -273,12 +281,17 @@ class MouseLightAPI(Paths):
         self, filterby=None, filter_regions=None, **kwargs
     ):
         """
-        Download neurons metadata and data from the API. The downloaded metadata can be filtered to keep only
-        the neurons whose soma is in a list of user selected brain regions.
+        Download neurons metadata and data from the API. The
+        downloaded metadata can be filtered to keep only
+        the neurons whose soma is in a list of user-selected brain regions.
 
-        :param filterby: Accepted values: "soma". If it's "soma", neurons are kept only when their soma
-                        is in the list of brain regions defined by filter_regions (Default value = None)
-        :param filter_regions: List of brain regions acronyms. If filtering neurons, these specify the filter criteria. (Default value = None)
+        :param filterby: Accepted values: "soma". If it's "soma",
+        neurons are kept only when their soma is in the
+        list of brain regions defined by filter_regions (Default
+        value = None)
+        :param filter_regions: List of brain regions acronyms.
+        If filtering neurons, these specify the filter
+        criteria. (Default value = None)
         :param **kwargs:
 
         """
@@ -296,7 +309,8 @@ class MouseLightAPI(Paths):
             round(res["queryTime"] / 1000, 2),
         )
 
-        # Process neurons to clean up the results and make them easier to handle
+        # Process neurons to clean up the results and make them
+        # easier to handle
         neurons = res["neurons"]
         node = namedtuple("node", "x y z r area_acronym sample_n parent_n")
         tracing_structure = namedtuple(
@@ -384,15 +398,18 @@ class MouseLightAPI(Paths):
         atlas=None,
     ):
         """
-        Filter metadata to keep only the neurons whose soma is in a given list of brain regions.
+        Filter metadata to keep only the neurons whose soma is
+        in a given list of brain regions.
 
-        :param filterby: Accepted values: "soma". If it's "soma", neurons are kept only when their
-                         soma is in the list of brain regions defined by filter_regions (Default
-                         value = None)
-        :param filter_regions: List of brain regions acronyms. If filtering neurons, these specify
-                               the filter criteria. (Default value = None)
-        :param atlas: A `bg_atlasapi.BrainGlobeAtlas` object. If not provided, load the
-                      default atlas.
+        :param filterby: Accepted values: "soma". If it's "soma",
+        neurons are kept only when their
+        soma is in the list of brain regions defined by
+        filter_regions (Defaultvalue = None)
+        :param filter_regions: List of brain regions acronyms.
+        If filtering neurons, these specify
+        the filter criteria. (Default value = None)
+        :param atlas: A `bg_atlasapi.BrainGlobeAtlas` object.
+        If not provided, load the default atlas.
         """
 
         # Filter neurons to keep only those matching the search criteria
@@ -404,7 +421,8 @@ class MouseLightAPI(Paths):
 
         if filter_regions is None:
             raise ValueError(
-                "If filtering neuron by region, you need to pass a list of filter regions to use"
+                "If filtering neuron by region, you need "
+                "to pass a list of filter regions to use"
             )
 
         # get brain globe atlas
@@ -428,7 +446,8 @@ class MouseLightAPI(Paths):
                     # ignore if region is not found
                     continue
 
-                # If any of the ancestors or itself are in the allowed regions, keep neuron.
+                # If any of the ancestors or itself are in the allowed
+                # regions, keep neuron.
                 if is_any_item_in_list(
                     filter_regions, neuron_region_ancestors
                 ):
@@ -470,7 +489,8 @@ class MouseLightAPI(Paths):
                 nrn = nmapi.get_neuron_by_name(neuron["idString"])
             except ValueError as exc:
                 logger.error(
-                    "Could not fetch the neuron %s for the following reason: %s",
+                    "Could not fetch the neuron %s for the "
+                    "following reason: %s",
                     neuron["idString"],
                     str(exc),
                 )

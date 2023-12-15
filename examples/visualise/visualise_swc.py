@@ -1,12 +1,14 @@
+"""
+This example shows how to use vedo to visualise a 3d reconstruction of a
+neuron.
+
+However, the recommended way to visualise neurons is with brainrender:
+https://github.com/brainglobe/brainrender
+"""
+
 from vedo import Plotter
 
 from morphapi.morphology.morphology import Neuron
-
-"""
-    This example shows how to use vedo to visualise a 3d reconstruction of a neuron.
-    However, the reccomended way to visualise neurons is with brainrender:
-    https://github.com/BrancoLab/BrainRender
-"""
 
 fp = "examples/example_files/example1.swc"
 

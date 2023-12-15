@@ -1,27 +1,116 @@
-[build-system]
-requires = [
-    "setuptools",
-    "setuptools_scm[toml]",
-    "wheel",
+[project]
+name = "morphapi"
+authors = [{name = "Federico Claudi", email= "hello@brainglobe.info"}]
+description = "A lightweight python package to download neuronal morphologies"
+readme = "README.md"
+requires-python = ">=3.9.0"
+dynamic = ["version"]
+
+dependencies = [
+    "bg_atlasapi",
+    "imagecodecs; python_version>='3.9'",
+    "neurom>=3,<4",
+    "numpy",
+    "pandas",
+    "pyyaml>=5.3",
+    "retry",
+    "rich",
+    "vedo>=2023.5.0",
+    "vtk",
 ]
 
+license = {text = "MIT"}
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/brainglobe/morphapi"
+"Bug Tracker" = "https://github.com/brainglobe/morphapi/issues"
+"Documentation" = "https://github.com/brainglobe/morphapi"
+"Source Code" = "https://github.com/brainglobe/morphapi"
+"User Support" = "https://github.com/brainglobe/morphapi/issues"
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "coverage",
+  "tox",
+  "black",
+  "mypy",
+  "pre-commit",
+  "ruff",
+  "setuptools_scm",
+  "pytest-sugar",
+  "allensdk",
+]
+
+nb = ["jupyter", "k3d"]
+
+[build-system]
+requires = [
+    "setuptools>=45",
+    "wheel",
+    "setuptools_scm[toml]>=6.2",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["morphapi*"]
+exclude = ["tests*", "examples*"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=morphapi"
+
 [tool.black]
-target-version = ['py37', 'py38', 'py39', 'py310']
+target-version = ['py39', 'py310', 'py311']
 skip-string-normalization = false
 line-length = 79
-exclude = '''
-(
-  /(
-      \.eggs
-    | \.git
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-  )/
-)
-'''
+
+[tool.setuptools_scm]
+
+[tool.check-manifest]
+ignore = [
+  ".yaml",
+  "tox.ini",
+  "tests/",
+  "tests/test_unit/",
+  "tests/test_integration/",
+]
+
+[tool.ruff]
+line-length = 79
+exclude = ["__init__.py","build",".eggs"]
+select = ["I", "E", "F"]
+fix = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{39,310,311}
+isolated_build = True
+
+[gh-actions]
+python =
+    3.9: py39
+    3.10: py310
+    3.11: py311
+
+[testenv]
+extras =
+    dev
+commands =
+    pytest -v --color=yes --cov=morphapi --cov-report=xml
+"""

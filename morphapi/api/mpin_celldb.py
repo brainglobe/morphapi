@@ -57,7 +57,8 @@ def fix_mpin_swgfile(file_path, fixed_file_path=None):
 
 
 class MpinMorphologyAPI(Paths):
-    """Handles the download of neuronal morphology data from the MPIN database."""
+    """Handles the download of neuronal morphology
+    data from the MPIN database."""
 
     def __init__(self, *args, **kwargs):
         Paths.__init__(self, *args, **kwargs)
@@ -137,7 +138,10 @@ class MpinMorphologyAPI(Paths):
             )
         SOURCE_DATA_DIR = "MPIN-Atlas__Kunst_et_al__neurons_all"
 
-        REMOTE_URL = "https://fishatlas.neuro.mpg.de/neurons/download/download_all_neurons_aligned"
+        REMOTE_URL = (
+            "https://fishatlas.neuro.mpg.de/neurons/download/"
+            "download_all_neurons_aligned"
+        )
 
         # # Download folder with all data:
         download_zip_path = Path(self.mpin_morphology) / "data.zip"
@@ -162,9 +166,11 @@ class MpinMorphologyAPI(Paths):
 
         shutil.rmtree(extracted_data_path.parent)
 
-        # # 2/1900 neurons still have a little bug, hopefully fixed in the future
+        # # 2/1900 neurons still have a little bug, hopefully
+        # fixed in the future
         # try:
         #     return Neuron(data_file=fixed_file_path)
-        # except:  # Ideally in the next iteration this except won't be necessary
+        # except:  # Ideally in the next iteration this except won't
+        # be necessary
         #     print(f"Unfixable problem while opening {file_path.name}")
         #     return

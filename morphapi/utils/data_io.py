@@ -6,7 +6,8 @@ import yaml
 
 def listdir(fld):
     """
-    List the files into a folder with the coplete file path instead of the relative file path like os.listdir.
+    List the files into a folder with the coplete file path instead of
+    the relative file path like os.listdir.
 
     :param fld: string, folder path
 
@@ -22,7 +23,7 @@ def get_file_name(filepath):
     return os.path.splitext(os.path.basename(filepath))[0]
 
 
-# ------------------------------ Load/Save data ------------------------------ #
+# ------------------------------ Load/Save data ---------------------------- #
 
 
 def save_yaml(filepath, content, append=False, topcomment=None):
@@ -63,12 +64,13 @@ def load_yaml(filepath):
     return yaml.load(open(filepath), Loader=yaml.FullLoader)
 
 
-# ----------------------------- Internet queries ----------------------------- #
+# ------------------------- Internet queries ------------------------- #
 def connected_to_internet(url="https://www.google.com/", timeout=5):
     """
     Check that there is an internet connection
 
-    :param url: url to use for testing (Default value = 'https://www.google.com/')
+    :param url: url to use for testing
+    (Default value = 'https://www.google.com/')
     :param timeout:  timeout to wait for [in seconds] (Default value = 5)
     """
 
@@ -80,9 +82,9 @@ def connected_to_internet(url="https://www.google.com/", timeout=5):
     return False
 
 
-# ---------------------------------------------------------------------------- #
-#                               Data manipulation                              #
-# ---------------------------------------------------------------------------- #
+# ------------------------------------------------------------------------ #
+#                               Data manipulation                          #
+# ------------------------------------------------------------------------ #
 def flatten_list(lst):
     """
     Flattens a list of lists

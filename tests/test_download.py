@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 
 import pytest
+
 from morphapi.api.allenmorphology import AllenMorphology
 from morphapi.api.mouselight import MouseLightAPI
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
@@ -18,7 +19,8 @@ def test_neuromorpho_download(tmpdir):
     with pytest.raises(
         ValueError,
         match=re.escape(
-            f"Query criteria UNKNOWN_FIELD not in available fields: {api.fields}"
+            f"Query criteria UNKNOWN_FIELD not in "
+            f"available fields: {api.fields}"
         ),
     ):
         api.get_neurons_metadata(UNKNOWN_FIELD=0)
@@ -33,7 +35,7 @@ def test_neuromorpho_download(tmpdir):
         api.get_neurons_metadata(strain="UNKNOWN_VALUE")
 
     metadata, _ = api.get_neurons_metadata(
-        size=2,  # Can get the metadata for up to 500 neurons at the time
+        size=2,  # Can get the metadata for up to 500 neurons at a time
         species="mouse",
         cell_type="pyramidal",
         brain_region="neocortex",

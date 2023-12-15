@@ -1,8 +1,13 @@
+"""
+mlapi.download_neurons returns a list of instances of the class Neuron
+from morphapi.morphology.morphology.
+"""
+
 from vedo import Plotter
 
 from morphapi.api.mouselight import MouseLightAPI
 
-# ---------------------------- Downloading neurons --------------------------- #
+# ---------------------------- Downloading neurons ------------------------- #
 mlapi = MouseLightAPI()
 
 # Fetch metadata for neurons with soma in the secondary motor cortex
@@ -14,13 +19,7 @@ neurons_metadata = mlapi.fetch_neurons_metadata(
 neurons = mlapi.download_neurons(neurons_metadata[0])
 
 
-"""
-    mlapi.download_neurons returns a list of instances of the class Neuron
-    from morphapi.morphology.morphology.
-"""
-
-
-# ------------------------------- Visualisation ------------------------------ #
+# ------------------------------- Visualisation ---------------------------- #
 print("creating meshes")
 neurons = [neuron.create_mesh()[1] for neuron in neurons]
 

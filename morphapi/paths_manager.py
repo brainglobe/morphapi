@@ -1,11 +1,11 @@
+"""
+Class to create and store paths to a number of folders uesed to save/load data
+"""
+
 from pathlib import Path
 
-"""
-    Class to create and store paths to a number of folders uesed to save/load data
-"""
-
-
-# Default paths for Data Folders (store stuff like object meshes, neurons morphology data etc)
+# Default paths for Data Folders (store stuff like object meshes,
+# neurons morphology data etc)
 default_paths = dict(
     # APIs caches
     allen_morphology_cache="Data/allen_morphology_cache",
@@ -21,10 +21,13 @@ default_paths = dict(
 class Paths:
     def __init__(self, base_dir=None, **kwargs):
         """
-        Parses a YAML file to get data folders paths. Stores paths to a number of folders used throughtout morphapi.
+        Parses a YAML file to get data folders paths. Stores paths to a
+        number of folders used throughtout morphapi.
 
-        :param base_dir: str with path to directory to use to save data. If none the user's base directiry is used.
-        :param kwargs: use the name of a folder as key and a path as argument to specify the path of individual subfolders
+        :param base_dir: str with path to directory to use to save data.
+        If none the user's base directiry is used.
+        :param kwargs: use the name of a folder as key and a path as
+        argument to specify the path of individual subfolders
         """
         # Get and make base directory
 
@@ -36,7 +39,8 @@ class Paths:
         self.base_dir.mkdir(exist_ok=True)
 
         for fld_name, folder in default_paths.items():
-            # Check if user provided a path for this folder, otherwise use default
+            # Check if user provided a path for this folder,
+            # otherwise use default
 
             path = self.base_dir / kwargs.pop(fld_name, folder)
 

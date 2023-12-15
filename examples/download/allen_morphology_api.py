@@ -15,7 +15,7 @@ neurons = am.neurons.loc[
 # Download some neurons
 neurons = am.download_neurons(neurons[:5].id.values)
 
-# ------------------------------- Visualisation ------------------------------ #
+# ----------------------- Visualisation --------------------- #
 print("creating meshes")
 neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
