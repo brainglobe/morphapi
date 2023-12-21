@@ -1,13 +1,9 @@
 import os
 
-from vedo import Mesh
-from vedo import load
-from vedo import merge
-from vedo import write
+from vedo import Mesh, load, merge, write
 
 from morphapi.paths_manager import Paths
-from morphapi.utils.data_io import load_yaml
-from morphapi.utils.data_io import save_yaml
+from morphapi.utils.data_io import load_yaml, save_yaml
 
 
 class NeuronCache(Paths):
@@ -21,7 +17,8 @@ class NeuronCache(Paths):
 
     def __init__(self, **kwargs):
         """
-        Initialise API interaction and fetch metadata of neurons in the Allen Database.
+        Initialise API interaction and fetch metadata of neurons
+        in the Allen Database.
         """
         super().__init__(**kwargs)  # path to data caches
 
@@ -100,7 +97,8 @@ class NeuronCache(Paths):
                     write(actor, fname[0])
                 else:
                     # Get a single actor for each neuron component.
-                    # If there's no data for the component create an empty actor
+                    # If there's no data for the component
+                    # create an empty actor
                     if not isinstance(actor, Mesh):
                         if isinstance(actor, (list, tuple)):
                             if len(actor) == 1:
@@ -110,9 +108,10 @@ class NeuronCache(Paths):
                             else:
                                 try:
                                     actor = merge(actor)
-                                except:
+                                except:  # noqa: E722
                                     raise ValueError(
-                                        f"{key} actor should be a mesh or a list of 1 mesh not {actor}"
+                                        f"{key} actor should be a mesh or a "
+                                        f"list of 1 mesh not {actor}"
                                     )
 
                     if actor is None:
@@ -124,5 +123,6 @@ class NeuronCache(Paths):
                         write(actor, fname[0])
                     else:
                         raise ValueError(
-                            f"No filename found for {key}. Filenames {file_names}"
+                            f"No filename found for {key}. "
+                            f"Filenames {file_names}"
                         )

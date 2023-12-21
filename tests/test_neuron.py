@@ -65,7 +65,8 @@ def test_empty_neuron(caplog):
     neuron.create_mesh()
 
     assert caplog.messages == [
-        "No data loaded, you can use the 'load_from_file' method to try to load the file."
+        "No data loaded, you can use the 'load_from_file' method to "
+        "try to load the file."
     ]
 
     neuron.load_from_file()

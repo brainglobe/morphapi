@@ -8,7 +8,8 @@ try:
     from allensdk.core.cell_types_cache import CellTypesCache
 except ModuleNotFoundError:
     raise ModuleNotFoundError(
-        'You need to install the allen sdk package to use AllenMorphology:  "pip install allensdk"'
+        "You need to install the allen sdk package to use "
+        'AllenMorphology:  "pip install allensdk"'
     )
 
 from morphapi.morphology.morphology import Neuron
@@ -19,15 +20,18 @@ logger = logging.getLogger(__name__)
 
 
 class AllenMorphology(Paths):
-    """Handles the download of neuronal morphology data from the Allen database."""
+    """Handles the download of neuronal morphology data from the
+    Allen database."""
 
     def __init__(self, *args, **kwargs):
         """
-        Initialise API interaction and fetch metadata of neurons in the Allen Database.
+        Initialise API interaction and fetch metadata of neurons in the
+        Allen Database.
         """
         if not connected_to_internet():
             raise ConnectionError(
-                "You will need to be connected to the internet to use the AllenMorphology class to download neurons"
+                "You will need to be connected to the internet to use the "
+                "AllenMorphology class to download neurons"
             )
 
         Paths.__init__(self, *args, **kwargs)
@@ -39,7 +43,8 @@ class AllenMorphology(Paths):
             )
         )
 
-        # Get a list of cell metadata for neurons with reconstructions, download if necessary
+        # Get a list of cell metadata for neurons with reconstructions,
+        # download if necessary
         self.neurons = pd.DataFrame(
             self.ctc.get_cells(require_reconstruction=True)
         )
@@ -47,7 +52,8 @@ class AllenMorphology(Paths):
 
         if not self.n_neurons:
             raise ValueError(
-                "Something went wrong and couldn't get neurons metadata from Allen"
+                "Something went wrong and couldn't get neurons metadata "
+                "from Allen"
             )
 
         self.downloaded_neurons = self.get_downloaded_neurons()
@@ -96,7 +102,8 @@ class AllenMorphology(Paths):
                 self.ctc.get_reconstruction(neuron_id, file_name=neuron_file)
             except Exception as exc:
                 logger.error(
-                    "Could not fetch the neuron %s for the following reason: %s",
+                    "Could not fetch the neuron %s "
+                    "for the following reason: %s",
                     neuron_id,
                     str(exc),
                 )

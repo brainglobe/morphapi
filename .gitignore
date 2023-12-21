@@ -1,45 +1,3 @@
-# Ignored file types
-*.ckpt
-*.vscode
-*.json
-*.xml
-*.idea
-*.pyc
-*.vtk
-*.obj
-*.stl
-*.nrrd
-*.svg
-*.tdms
-
-# These file formats are tracked
-# *.avi
-# *.png
-# *.mp4
-# *.jpg
-
-
-# User folder where they can save stuff without it being tracked by git
-User/*
-
-# Visual studio stuff
-*/tempCodeRunnerFile.py
-*/.ipynb_checkpoints
-.ipynb_checkpoints
-*/__pycache__
-__pycache__
-.DS_Store
-Users/
-
-# Test scripts and hidden files
-workspace.py
-workspace.ipynb
-playground.py
-secrets
-
-# Custom config files
-*.conf.custom
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -50,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -61,11 +20,9 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -85,9 +42,8 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*.cover
+*,cover
 .hypothesis/
-.pytest_cache/
 
 # Translations
 *.mo
@@ -96,59 +52,32 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
 
-# Flask stuff:
+# Flask instance folder
 instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
 
 # Sphinx documentation
-doc/build/
+docs/_build/
 
-# pydocmd
-_build/
-mkdocs.yml
+# MkDocs documentation
+/site/
 
 # PyBuilder
 target/
 
+# Pycharm and VSCode
+.idea/
+venv/
+.vscode/
+
+# IPython Notebook
+.ipynb_checkpoints
+
 # pyenv
 .python-version
 
-# celery beat schedule file
-celerybeat-schedule
+# OS
+.DS_Store
 
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-
-.idea/
-
-*.~lock.*
-
-# Test reports
-reports
+# written by setuptools_scm
+**/_version.py

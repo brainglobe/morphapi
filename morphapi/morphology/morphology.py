@@ -6,8 +6,7 @@ import neurom as nm
 from neurom.core.dataformat import COLS
 from vedo import merge
 from vedo.colors import color_map
-from vedo.shapes import Sphere
-from vedo.shapes import Tube
+from vedo.shapes import Sphere, Tube
 
 try:
     # For NeuroM >= 3
@@ -198,7 +197,8 @@ class Neuron(NeuronCache):
     ):
         if self.points is None:
             logger.warning(
-                "No data loaded, you can use the 'load_from_file' method to try to load the file."
+                "No data loaded, you can use the 'load_from_file' "
+                "method to try to load the file."
             )
             return
 
@@ -217,11 +217,13 @@ class Neuron(NeuronCache):
             or not neurite_radius > 0
         ):
             raise ValueError(
-                "Invalid value for parameter neurite_radius, should be a float > 0"
+                "Invalid value for parameter neurite_radius, "
+                "should be a float > 0"
             )
         if not isinstance(soma_radius, (int, float)) or not soma_radius > 0:
             raise ValueError(
-                "Invalid value for parameter soma_radius, should be a float > 0"
+                "Invalid value for parameter soma_radius, "
+                "should be a float > 0"
             )
         # prepare params dict for caching
         _params = dict(neurite_radius=neurite_radius, soma_radius=soma_radius)

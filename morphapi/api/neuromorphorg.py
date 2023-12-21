@@ -3,8 +3,7 @@ import os
 
 from morphapi.morphology.morphology import Neuron
 from morphapi.paths_manager import Paths
-from morphapi.utils.webqueries import connected_to_internet
-from morphapi.utils.webqueries import request
+from morphapi.utils.webqueries import connected_to_internet, request
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,8 @@ class NeuroMorpOrgAPI(Paths):
     def __init__(self, *args, **kwargs):
         if not connected_to_internet():
             raise ConnectionError(
-                "You will need to be connected to the internet to use the NeuroMorpOrgAPI class to download neurons"
+                "You will need to be connected to the internet to "
+                "use the NeuroMorpOrgAPI class to download neurons"
             )
 
         Paths.__init__(self, *args, **kwargs)
@@ -35,7 +35,8 @@ class NeuroMorpOrgAPI(Paths):
     @property
     def fields(self):
         """
-        Fields contains the types of fields that can be used to restrict queries
+        Fields contains the types of fields that can be used to
+        restrict queries
         """
         if self._fields is None:
             self._fields = request(self._base_url + "/fields").json()[
@@ -69,20 +70,26 @@ class NeuroMorpOrgAPI(Paths):
         Neuromorpho.org  paginates it's requests so not all neurons metadata
         can be returned at once
 
-        :param size: int in range [0, 500]. Number of neurons whose metadata can be returned at the same time
-        :param page: int > 0. Page number. The number of pages depends on size and on how many neurons match the criteria
-        :param criteria: use keywords to restrict the query to neurons that match given criteria.
-                keywords should be pass as "field=value". Then only neuron's whose 'field'
-                attribute has value 'value' will be returned.
+        :param size: int in range [0, 500]. Number of neurons whose
+        metadata can be returned at the same time
+        :param page: int > 0. Page number. The number of pages depends
+        on size and on how many neurons match the criteria
+        :param criteria: use keywords to restrict the query to neurons
+        that match given criteria.
+        keywords should be pass as "field=value".
+        Then only neuron's whose 'field'
+        attribute has value 'value' will be returned.
         """
 
         if size < 0 or size > 500:
             raise ValueError(
-                f"Invalid size argument: {size}. Size should be an integer between 0 and 500"
+                f"Invalid size argument: {size}. Size should be an "
+                f"integer between 0 and 500"
             )
         if page < 0:
             raise ValueError(
-                f"Invalid page argument: {page}. Page should be an integer >= 0"
+                f"Invalid page argument: {page}. Page should be an "
+                f"integer >= 0"
             )
 
         url = self._base_url + "/select?q="
@@ -109,12 +116,14 @@ class NeuroMorpOrgAPI(Paths):
             for crit, val in criteria.items():
                 if crit not in self.fields:
                     raise ValueError(
-                        f"Query criteria {crit} not in available fields: {self.fields}"
+                        f"Query criteria {crit} not in "
+                        f"available fields: {self.fields}"
                     )
                 field_values = self.get_fields_values(crit)
                 if val not in field_values:
                     raise ValueError(
-                        f"Query criteria value {val} for field {crit} not valid."
+                        f"Query criteria value {val} for "
+                        f"field {crit} not valid."
                         + f"Valid values include: {field_values}"
                     )
 
@@ -125,8 +134,10 @@ class NeuroMorpOrgAPI(Paths):
         neurons = neurons["_embedded"]["neuronResources"]
 
         logger.info(
-            f"Found metadata for {page['totalElements']} neurons [{page['totalPages']} pages in total]. "
-            f"Returning metadata about {len(neurons)} neurons from page {page['number']}"
+            f"Found metadata for {page['totalElements']} neurons "
+            f"[{page['totalPages']} pages in total]. "
+            f"Returning metadata about {len(neurons)} neurons "
+            f"from page {page['number']}"
         )
 
         return neurons, page
@@ -159,15 +170,18 @@ class NeuroMorpOrgAPI(Paths):
     ):
         """
         Downloads neuronal morphological data and saves it to .swc files.
-        It then returns a list of Neuron instances with morphological data for each neuron.
+        It then returns a list of Neuron instances with
+        morphological data for each neuron.
 
-        :param neurons: list of neurons metadata (as returned by one of the functions
-            used to fetch metadata)
-        :param _name: used internally to save cached neurons with a different prefix when the
+        :param neurons: list of neurons metadata (as
+        returned by one of the functions used to fetch metadata)
+        :param _name: used internally to save cached neurons
+        with a different prefix when the
             class is used to download neurons for other APIs
         :param load_neurons: if set to True, the neurons are loaded into a
             `morphapi.morphology.morphology.Neuron` object and returned
-        :param use_neuron_names: if set to True, the filenames use the names of the neurons instead
+        :param use_neuron_names: if set to True, the filenames
+        use the names of the neurons instead
             of their IDs
         """
         if not isinstance(neurons, (list, tuple)):
@@ -195,9 +209,15 @@ class NeuroMorpOrgAPI(Paths):
             if not os.path.isfile(filepath):
                 # Download and write to file
                 if self._version == "CNG version":
-                    url = f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/CNG version/{neuron['neuron_name']}.CNG.swc"
+                    url = (
+                        f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/"
+                        f"CNG version/{neuron['neuron_name']}.CNG.swc"
+                    )
                 else:
-                    url = f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/{self._version}/{neuron['neuron_name']}.swc"
+                    url = (
+                        f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/"
+                        f"{self._version}/{neuron['neuron_name']}.swc"
+                    )
 
                 try:
                     req = request(url)
@@ -205,7 +225,8 @@ class NeuroMorpOrgAPI(Paths):
                         f.write(req.content.decode("utf-8"))
                 except ValueError as exc:
                     logger.error(
-                        "Could not fetch the neuron %s for the following reason: %s",
+                        "Could not fetch the neuron %s for the "
+                        "following reason: %s",
                         neuron["neuron_name"],
                         str(exc),
                     )
