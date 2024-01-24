@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 from bg_atlasapi import BrainGlobeAtlas
 from bg_atlasapi.utils import retrieve_over_http
-from bg_space import SpaceConvention
+from brainglobe_space import SpaceConvention
 from rich.progress import track
 
 from morphapi.morphology.morphology import Neuron
