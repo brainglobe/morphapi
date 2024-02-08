@@ -164,9 +164,9 @@ class Neuron(NeuronCache):
 
         # Get each components color from args
         if neuron_color is not None:  # uniform color
-            soma_color = (
-                apical_dendrites_color
-            ) = basal_dendrites_color = axon_color = neuron_color
+            soma_color = apical_dendrites_color = basal_dendrites_color = (
+                axon_color
+            ) = neuron_color
         elif cmap is not None:  # color according to cmap
             if neuron_number is None:
                 neuron_number = 0
@@ -174,9 +174,9 @@ class Neuron(NeuronCache):
             soma_color = color_map(
                 neuron_number, name=cmap, vmin=cmap_lims[0], vmax=cmap_lims[1]
             )
-            apical_dendrites_color = (
-                basal_dendrites_color
-            ) = axon_color = soma_color
+            apical_dendrites_color = basal_dendrites_color = axon_color = (
+                soma_color
+            )
 
         else:  # Use color specified for each component
             pass
