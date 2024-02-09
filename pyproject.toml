@@ -1,6 +1,6 @@
 [project]
 name = "morphapi"
-authors = [{name = "Federico Claudi", email= "hello@brainglobe.info"}]
+authors = [{ name = "Federico Claudi", email = "hello@brainglobe.info" }]
 description = "A lightweight python package to download neuronal morphologies"
 readme = "README.md"
 requires-python = ">=3.9.0"
@@ -8,6 +8,7 @@ dynamic = ["version"]
 
 dependencies = [
     "bg_atlasapi",
+    "brainglobe-space >=1.0.0",
     "imagecodecs; python_version>='3.9'",
     "neurom>=3,<4",
     "numpy",
@@ -19,7 +20,7 @@ dependencies = [
     "vtk",
 ]
 
-license = {text = "MIT"}
+license = { text = "MIT" }
 
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -41,27 +42,23 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = [
-  "pytest",
-  "pytest-cov",
-  "coverage",
-  "tox",
-  "black",
-  "mypy",
-  "pre-commit",
-  "ruff",
-  "setuptools_scm",
-  "pytest-sugar",
-  "allensdk",
+    "pytest",
+    "pytest-cov",
+    "coverage",
+    "tox",
+    "black",
+    "mypy",
+    "pre-commit",
+    "ruff",
+    "setuptools_scm",
+    "pytest-sugar",
+    "allensdk",
 ]
 
 nb = ["jupyter", "k3d"]
 
 [build-system]
-requires = [
-    "setuptools>=45",
-    "wheel",
-    "setuptools_scm[toml]>=6.2",
-]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -83,16 +80,16 @@ line-length = 79
 
 [tool.check-manifest]
 ignore = [
-  ".yaml",
-  "tox.ini",
-  "tests/",
-  "tests/test_unit/",
-  "tests/test_integration/",
+    ".yaml",
+    "tox.ini",
+    "tests/",
+    "tests/test_unit/",
+    "tests/test_integration/",
 ]
 
 [tool.ruff]
 line-length = 79
-exclude = ["__init__.py","build",".eggs"]
+exclude = ["__init__.py", "build", ".eggs"]
 select = ["I", "E", "F"]
 fix = true
 
