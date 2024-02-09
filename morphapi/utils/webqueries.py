@@ -2,7 +2,7 @@ import time
 
 import requests
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.ssl_ import create_urllib3_context
+from urllib3.util.ssl_ import create_urllib3_context
 
 from morphapi.utils.data_io import connected_to_internet
 
