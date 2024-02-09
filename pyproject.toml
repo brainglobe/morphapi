@@ -111,7 +111,3 @@ extras =
 commands =
     pytest -v --color=yes --cov=morphapi --cov-report=xml
 """
-
-[[tool.mypy.overrides]]
-module = "requests.packages.urllib3.util.ssl_"
-ignore_missing_imports = true
