@@ -10,7 +10,7 @@ import logging
 from collections import namedtuple
 
 import pandas as pd
-from bg_atlasapi import BrainGlobeAtlas
+from brainglobe_atlasapi import BrainGlobeAtlas
 from retry import retry
 
 from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
@@ -254,7 +254,7 @@ def fetch_atlas(atlas_name="allen_mouse_25um"):
     """Fetch a given atlas.
 
     See here for available atlases:
-    https://docs.brainglobe.info/bg-atlasapi/introduction#atlases-available
+    https://docs.brainglobe.info/brainglobe-atlasapi/introduction#atlases-available
     """
     return BrainGlobeAtlas(atlas_name)
 
@@ -408,7 +408,7 @@ class MouseLightAPI(Paths):
         :param filter_regions: List of brain regions acronyms.
         If filtering neurons, these specify
         the filter criteria. (Default value = None)
-        :param atlas: A `bg_atlasapi.BrainGlobeAtlas` object.
+        :param atlas: A `brainglobe_atlasapi.BrainGlobeAtlas` object.
         If not provided, load the default atlas.
         """
 
