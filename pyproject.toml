@@ -7,7 +7,7 @@ requires-python = ">=3.9.0"
 dynamic = ["version"]
 
 dependencies = [
-    "bg_atlasapi",
+    "brainglobe-atlasapi >=2.0.1",
     "brainglobe-space >=1.0.0",
     "imagecodecs; python_version>='3.9'",
     "neurom>=3,<4",
@@ -90,8 +90,10 @@ ignore = [
 [tool.ruff]
 line-length = 79
 exclude = ["__init__.py", "build", ".eggs"]
-select = ["I", "E", "F"]
 fix = true
+
+[tool.ruff.lint]
+select = ["I", "E", "F"]
 
 [tool.tox]
 legacy_tox_ini = """

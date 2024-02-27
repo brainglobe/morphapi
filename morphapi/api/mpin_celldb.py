@@ -3,8 +3,8 @@ import zipfile
 from pathlib import Path
 
 import pandas as pd
-from bg_atlasapi import BrainGlobeAtlas
-from bg_atlasapi.utils import retrieve_over_http
+from brainglobe_atlasapi import BrainGlobeAtlas
+from brainglobe_atlasapi.utils import retrieve_over_http
 from brainglobe_space import SpaceConvention
 from rich.progress import track
 
