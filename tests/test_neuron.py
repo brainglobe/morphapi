@@ -1,3 +1,4 @@
+from pathlib import Path
 from random import choice
 
 import numpy as np
@@ -59,7 +60,7 @@ def test_empty_neuron(caplog):
     file = sorted(listdir("tests/data"))[0]
     neuron = Neuron(file, load_file=False)
 
-    assert str(neuron.data_file) == "tests/data/example1.swc"
+    assert str(neuron.data_file) == str(Path("tests/data/example1.swc"))
 
     caplog.clear()
     neuron.create_mesh()
