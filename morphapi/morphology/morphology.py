@@ -73,43 +73,9 @@ class Neuron(NeuronCache):
         else:
             self.load_from_swc()
 
-    def repair_swc_file(self):
-        """
-        Fixes this: https://github.com/BlueBrain/NeuroM/issues/835
-        """
-        with open(self.data_file, "r") as read:
-            content = read.readlines()
-
-        clean = []
-        for line in content:
-            if not len(line):
-                clean.append(line)
-                continue
-
-            line = line.replace("\n", "").replace("\t", " ")
-            vals = line.split(" ")
-            if len(vals) < 2:
-                clean.append(line)
-                continue
-
-            if vals[1] != "1" and vals[-1] == "-1":
-                vals[-1] = "0"
-                clean.append(" ".join(vals))
-            else:
-                clean.append(line)
-
-        if len(clean) != len(content):
-            raise ValueError
-
-        with open(self.data_file, "w") as write:
-            for line in clean:
-                write.write(f"{line}\n")
-
     def load_from_swc(self):
         if self.neuron_name is None:
             self.neuron_name = self.data_file.name
-
-        self.repair_swc_file()
 
         nrn = nm.load_morphology(self.data_file)
 
