@@ -40,6 +40,9 @@ jobs:
 
     steps:
       # Run tests
+      - name: install HDF5 libs on ARM Mac
+        if: matrix.os == 'macos-latest'
+        run: brew install hdf5
       - uses: neuroinformatics-unit/actions/test@v2
         with:
           python-version: ${{ matrix.python-version }}
