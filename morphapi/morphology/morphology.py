@@ -78,23 +78,30 @@ class Neuron(NeuronCache):
             self.neuron_name = self.data_file.name
 
         nrn = nm.load_morphology(self.data_file)
-
-        # Get position and radius of some
-        soma_pos = nrn.soma.points[0, :3]
-        soma_radius = nrn.soma.points[0, -1]
-
-        # Get the rest of the data and store it
         self.morphology = nrn
-        self.points = dict(
-            soma=component(
-                soma_pos[0],
-                soma_pos[1],
-                soma_pos[2],
-                soma_pos,
-                soma_radius,
-                nrn.soma,
-            ),
-        )
+
+        try:
+            # Get position and radius of soma
+            soma_pos = nrn.soma.points[0, :3]
+            soma_radius = nrn.soma.points[0, -1]
+
+            # Get the rest of the data and store it
+            self.points = dict(
+                soma=component(
+                    soma_pos[0],
+                    soma_pos[1],
+                    soma_pos[2],
+                    soma_pos,
+                    soma_radius,
+                    nrn.soma,
+                ),
+            )
+        except IndexError:
+            logger.warning(
+                f"Neuron {self.neuron_name} has no soma, "
+                "only neurites will be loaded"
+            )
+            self.points = dict(soma=None)
 
         for ntype, nclass in self._neurite_types.items():
             self.points[ntype] = [
@@ -207,16 +214,17 @@ class Neuron(NeuronCache):
         else:
             # Create soma actor
             neurites = {}
-            coords = self.points["soma"].coords
-            if self.invert_dims:
-                coords = coords[[2, 1, 0]]
+            if self.points["soma"] is not None:
+                coords = self.points["soma"].coords
+                if self.invert_dims:
+                    coords = coords[[2, 1, 0]]
 
-            soma = Sphere(
-                pos=coords,
-                r=self.points["soma"].radius * soma_radius,
-                c=soma_color,
-            ).compute_normals()
-            neurites["soma"] = soma.clone().c(soma_color)
+                soma = Sphere(
+                    pos=coords,
+                    r=self.points["soma"].radius * soma_radius,
+                    c=soma_color,
+                ).compute_normals()
+                neurites["soma"] = soma.clone().c(soma_color)
 
             # Create neurites actors
             for ntype in self._neurite_types:
