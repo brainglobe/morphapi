@@ -3,7 +3,7 @@ name = "morphapi"
 authors = [{ name = "Federico Claudi", email = "hello@brainglobe.info" }]
 description = "A lightweight python package to download neuronal morphologies"
 readme = "README.md"
-requires-python = ">=3.9.0"
+requires-python = ">=3.10"
 dynamic = ["version"]
 
 dependencies = [
@@ -26,7 +26,6 @@ classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Operating System :: OS Independent",
@@ -72,7 +71,7 @@ exclude = ["tests*", "examples*"]
 addopts = "--cov=morphapi"
 
 [tool.black]
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py310','py311']
 skip-string-normalization = false
 line-length = 79
 
@@ -98,12 +97,11 @@ select = ["I", "E", "F"]
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{39,310,311}
+envlist = py{310,311}
 isolated_build = True
 
 [gh-actions]
 python =
-    3.9: py39
     3.10: py310
     3.11: py311
 
