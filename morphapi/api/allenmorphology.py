@@ -69,7 +69,7 @@ class AllenMorphology(Paths):
         it to a cells.json file.
         """
         cells_path = Path(
-            os.path.join(self.allen_morphology_cache, "cells.json")
+            os.path.join(self.allen_morphology_cache, "cells.json")  # type: ignore[attr-defined]
         )
 
         if not cells_path.exists():
@@ -147,8 +147,8 @@ class AllenMorphology(Paths):
         Gets the path to files of downloaded neurons
         """
         return [
-            os.path.join(self.allen_morphology_cache, f)
-            for f in os.listdir(self.allen_morphology_cache)
+            os.path.join(self.allen_morphology_cache, f)  # type: ignore[attr-defined]
+            for f in os.listdir(self.allen_morphology_cache)  # type: ignore[attr-defined]
             if ".swc" in f
         ]
 
@@ -157,7 +157,7 @@ class AllenMorphology(Paths):
         Build a filepath from neuron's metadata.
         """
         return os.path.join(
-            self.allen_morphology_cache, "{}.swc".format(neuron_id)
+            self.allen_morphology_cache, "{}.swc".format(neuron_id)  # type: ignore[attr-defined]
         )
 
     def download_neurons(self, ids, load_neurons=True, **kwargs):
