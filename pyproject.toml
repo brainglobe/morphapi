@@ -52,7 +52,6 @@ dev = [
     "ruff",
     "setuptools_scm",
     "pytest-sugar",
-    "allensdk",
 ]
 
 nb = ["jupyter", "k3d"]
