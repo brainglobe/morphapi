@@ -66,7 +66,7 @@ class AllenMorphology(Paths):
     def get_cells(self, require_reconstruction: bool = True) -> pd.DataFrame:
         """
         Download the metadata for all neurons in the Allen database and save
-        it to a cells_api.json file.
+        it to a cells.json file.
         """
         cells_path = Path(
             os.path.join(self.allen_morphology_cache, "cells.json")
@@ -162,11 +162,10 @@ class AllenMorphology(Paths):
 
     def download_neurons(self, ids, load_neurons=True, **kwargs):
         """
-            Download neurons and return neuron reconstructions (instances
-            of Neuron class)
+        Download neurons and return neuron reconstructions (instances
+        of Neuron class)
 
         :param ids: list of integers with neurons IDs
-
         """
         if isinstance(ids, np.ndarray):
             ids = ids.tolist()
