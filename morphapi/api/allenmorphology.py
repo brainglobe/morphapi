@@ -217,10 +217,13 @@ class AllenMorphology(Paths):
         file_paths = r.json()["msg"][0]["well_known_files"]
         file_path = None
         for file in file_paths:
+            # There are 3 types of files for each reconstructed neuron:
+            # .png, .swc and marker_m.swc files. We want the plain .swc file
             if ".png" not in file["path"] and "marker" not in file["path"]:
                 file_path = file["download_link"]
                 break
 
+        # Check to make sure a path to a reconstruction swc file was found
         if not file_path:
             raise ValueError(
                 f"Could not find a reconstruction file for neuron {neuron_id}"
