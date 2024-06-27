@@ -97,7 +97,7 @@ class AllenMorphology(Paths):
 
         :param cells_path: Path to save the metadata to
         """
-        query = "http://api.brain-map.org/api/v2/data/query.json?criteria=model::ApiCellTypesSpecimenDetail,rma::options[num_rows$eqall]"
+        query = "https://api.brain-map.org/api/v2/data/query.json?criteria=model::ApiCellTypesSpecimenDetail,rma::options[num_rows$eqall]"
 
         try:
             r = requests.get(query)
@@ -121,7 +121,7 @@ class AllenMorphology(Paths):
         :param cells_path: Path to the metadata file
         """
         # Query for all cell types but return no rows (check for total number)
-        query = "http://api.brain-map.org/api/v2/data/query.json?criteria=model::ApiCellTypesSpecimenDetail,rma::options[num_rows$eq0]"
+        query = "https://api.brain-map.org/api/v2/data/query.json?criteria=model::ApiCellTypesSpecimenDetail,rma::options[num_rows$eq0]"
 
         cells = pd.read_json(cells_path)
         try:
@@ -211,7 +211,7 @@ class AllenMorphology(Paths):
         :param neuron_id: int, neuron ID
         :param file_name: str, path to save the neuron's reconstruction to
         """
-        query_for_file_path = f"http://api.brain-map.org/api/v2/data/query.json?criteria=model::NeuronReconstruction,rma::criteria,[specimen_id$eq{neuron_id}],rma::include,well_known_files"
+        query_for_file_path = f"https://api.brain-map.org/api/v2/data/query.json?criteria=model::NeuronReconstruction,rma::criteria,[specimen_id$eq{neuron_id}],rma::include,well_known_files"
 
         r = requests.get(query_for_file_path)
         file_paths = r.json()["msg"][0]["well_known_files"]
@@ -229,7 +229,7 @@ class AllenMorphology(Paths):
                 f"Could not find a reconstruction file for neuron {neuron_id}"
             )
 
-        query_file = f"http://api.brain-map.org{file_path}"
+        query_file = f"https://api.brain-map.org{file_path}"
         r = requests.get(query_file)
         with open(file_name, "wb") as f:
             f.write(r.content)
