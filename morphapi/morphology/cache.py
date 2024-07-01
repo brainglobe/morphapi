@@ -72,7 +72,7 @@ class NeuronCache(Paths):
         }
 
         for nn, act in loaded.items():
-            if len(act.points()) == 0:
+            if len(act.vertices) == 0:
                 loaded[nn] = None
 
         return loaded
