@@ -1,3 +1,4 @@
+import ssl
 import time
 
 import requests
@@ -14,7 +15,9 @@ class NoDhAdapter(HTTPAdapter):
     """A TransportAdapter that disables DH cipher in Requests."""
 
     def init_poolmanager(self, *args, **kwargs):
-        context = create_urllib3_context(ciphers=CIPHERS)
+        context = create_urllib3_context(
+            ciphers=CIPHERS, cert_reqs=ssl.CERT_OPTIONAL
+        )
         kwargs["ssl_context"] = context
         return super(NoDhAdapter, self).init_poolmanager(*args, **kwargs)
 
@@ -33,7 +36,7 @@ def request(url, verify=True):
 
     session = requests.Session()
     session.mount("https://", NoDhAdapter())
-    response = session.get(url)
+    response = session.get(url, verify=verify)
 
     if response.ok:
         return response
