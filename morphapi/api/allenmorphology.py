@@ -68,9 +68,7 @@ class AllenMorphology(Paths):
         Download the metadata for all neurons in the Allen database and save
         it to a cells.json file.
         """
-        cells_path = Path(
-            os.path.join(self.allen_morphology_cache, "cells.json")  # type: ignore[attr-defined]
-        )
+        cells_path = Path(self.allen_morphology_cache) / "cells.json"  # type: ignore[attr-defined]
 
         if not cells_path.exists():
             cells = self.fetch_all_cell_metadata(cells_path)
