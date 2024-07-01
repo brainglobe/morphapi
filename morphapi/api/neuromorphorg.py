@@ -1,6 +1,8 @@
 import logging
 import os
 
+import requests
+
 from morphapi.morphology.morphology import Neuron
 from morphapi.paths_manager import Paths
 from morphapi.utils.webqueries import connected_to_internet, request
@@ -24,8 +26,8 @@ class NeuroMorpOrgAPI(Paths):
 
         # Check that neuromorpho.org is not down
         try:
-            request("https://neuromorpho.org/api/health")
-        except Exception as e:
+            request("https://neuromorpho.org/api/health", verify=False)
+        except requests.exceptions.RequestException as e:
             raise ConnectionError(
                 f"It seems that neuromorphos API is down: {e}"
             )
@@ -39,9 +41,9 @@ class NeuroMorpOrgAPI(Paths):
         restrict queries
         """
         if self._fields is None:
-            self._fields = request(self._base_url + "/fields").json()[
-                "Neuron Fields"
-            ]
+            self._fields = request(
+                self._base_url + "/fields", verify=False
+            ).json()["Neuron Fields"]
         return self._fields
 
     def get_fields_values(self, field):
@@ -54,7 +56,8 @@ class NeuroMorpOrgAPI(Paths):
         while current_page < max_page:
             req = request(
                 self._base_url
-                + f"/fields/{field}?&size=1000&page={current_page}"
+                + f"/fields/{field}?&size=1000&page={current_page}",
+                verify=False,
             ).json()
             values.extend(req["fields"])
             max_page = req.get("page", {}).get("totalPages", max_page)
@@ -64,7 +67,7 @@ class NeuroMorpOrgAPI(Paths):
     def get_neurons_metadata(self, size=100, page=0, **criteria):
         """
         Uses the neuromorpho API to download metadata about neurons.
-        Criteri can be used to restrict the search to neurons of interest/
+        Criteria can be used to restrict the search to neurons of interest/
         https://neuromorpho.org/apiReference.html
 
         Neuromorpho.org  paginates it's requests so not all neurons metadata
@@ -105,7 +108,7 @@ class NeuroMorpOrgAPI(Paths):
         url += f"&size={int(size)}&page={int(page)}"
 
         try:
-            req = request(url)
+            req = request(url, verify=False)
             neurons = req.json()
             valid_url = req.ok and "error" not in neurons
         except ValueError:
@@ -146,13 +149,13 @@ class NeuroMorpOrgAPI(Paths):
         """
         Get a neuron's metadata given it's id number
         """
-        return request(self._base_url + f"/id/{nid}").json()
+        return request(self._base_url + f"/id/{nid}", verify=False).json()
 
     def get_neuron_by_name(self, nname):
         """
         Get a neuron's metadata given it's name
         """
-        return request(self._base_url + f"/name/{nname}").json()
+        return request(self._base_url + f"/name/{nname}", verify=False).json()
 
     def build_filepath(self, neuron_id):
         """
@@ -220,7 +223,7 @@ class NeuroMorpOrgAPI(Paths):
                     )
 
                 try:
-                    req = request(url)
+                    req = request(url, verify=False)
                     with open(filepath, "w") as f:
                         f.write(req.content.decode("utf-8"))
                 except ValueError as exc:
