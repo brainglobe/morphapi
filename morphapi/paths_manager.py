@@ -8,13 +8,13 @@ from pathlib import Path
 # neurons morphology data etc)
 default_paths = dict(
     # APIs caches
-    allen_morphology_cache="Data/allen_morphology_cache",
-    mouselight_cache="Data/mouselight_cache",
-    neuromorphorg_cache="Data/neuromorphorg_cache",
-    meshes_cache="Data/meshes_cache",
+    allen_morphology_cache="allen_morphology_cache",
+    mouselight_cache="mouselight_cache",
+    neuromorphorg_cache="neuromorphorg_cache",
+    meshes_cache="meshes_cache",
     # Other
-    mouse_connectivity_cache="Data/mouse_connectivity_cache",
-    mpin_morphology="Data/mpin_morphology",
+    mouse_connectivity_cache="mouse_connectivity_cache",
+    mpin_morphology="mpin_morphology",
 )
 
 
@@ -32,7 +32,7 @@ class Paths:
         # Get and make base directory
 
         if base_dir is None:
-            self.base_dir = Path.home() / ".morphapi"
+            self.base_dir = Path.home() / ".brainglobe" / "morphapi"
         else:
             self.base_dir = Path(base_dir)
 
