@@ -36,7 +36,7 @@ class Paths:
         else:
             self.base_dir = Path(base_dir)
 
-        self.base_dir.mkdir(exist_ok=True)
+        self.base_dir.mkdir(exist_ok=True, parents=True)
 
         for fld_name, folder in default_paths.items():
             # Check if user provided a path for this folder,

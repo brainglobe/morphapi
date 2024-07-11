@@ -165,12 +165,3 @@ class MpinMorphologyAPI(Paths):
             fix_mpin_swgfile(f, self.data_path / f.name)
 
         shutil.rmtree(extracted_data_path.parent)
-
-        # # 2/1900 neurons still have a little bug, hopefully
-        # fixed in the future
-        # try:
-        #     return Neuron(data_file=fixed_file_path)
-        # except:  # Ideally in the next iteration this except won't
-        # be necessary
-        #     print(f"Unfixable problem while opening {file_path.name}")
-        #     return
