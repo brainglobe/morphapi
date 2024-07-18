@@ -11,7 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 class NeuroMorpOrgAPI(Paths):
-    _base_url = "https://neuromorpho.org/api/neuron"
+    # Use the URL as advised in the API docs:
+    # https://neuromorpho.org/apiReference.html#introduction
+    _base_url = "http://cng.gmu.edu:8080/api/neuron"
 
     _version = "CNG version"  # which swc version, standardized or original
 
@@ -26,10 +28,10 @@ class NeuroMorpOrgAPI(Paths):
 
         # Check that neuromorpho.org is not down
         try:
-            request("https://neuromorpho.org/api/health", verify=False)
+            request("http://cng.gmu.edu:8080/api/health", verify=False)
         except requests.exceptions.RequestException as e:
             raise ConnectionError(
-                f"It seems that neuromorphos API is down: {e}"
+                f"It seems that neuromorpho API is down: {e}"
             )
 
         self._fields = None
