@@ -3,6 +3,8 @@ from collections import namedtuple
 from pathlib import Path
 
 import neurom as nm
+from morphio import Morphology as MorphioMorphology
+from morphio import Option
 from neurom.core.dataformat import COLS
 from vedo import merge
 from vedo.colors import color_map
@@ -77,7 +79,11 @@ class Neuron(NeuronCache):
         if self.neuron_name is None:
             self.neuron_name = self.data_file.name
 
-        nrn = nm.load_morphology(self.data_file)
+        morphio_input = MorphioMorphology(
+            str(self.data_file),
+            options=Option.allow_unifurcated_section_change,
+        )
+        nrn = nm.load_morphology(morphio_input)
         self.morphology = nrn
 
         try:
