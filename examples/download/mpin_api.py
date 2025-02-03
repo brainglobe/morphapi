@@ -1,7 +1,7 @@
 # ----------------------------- Download dataset -------------------------- #
 """
-    If it's the first time using this API, you'll have to download the dataset
-    with all of the neurons' data.
+If it's the first time using this API, you'll have to download the dataset
+with all of the neurons' data.
 """
 from vedo import Plotter
 
