@@ -32,7 +32,7 @@ class NeuroMorpOrgAPI(Paths):
             request(health_url, verify=False)
         except (requests.exceptions.RequestException, ValueError):
             try:
-                self._base_url = "https://neuromorpho.org/api/neuron"
+                self._base_url = "http://neuromorpho.org/api/neuron"
                 health_url = (
                     "/".join(self._base_url.split("/")[:-1]) + "/health"
                 )
