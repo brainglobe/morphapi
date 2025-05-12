@@ -28,11 +28,22 @@ class NeuroMorpOrgAPI(Paths):
 
         # Check that neuromorpho.org is not down
         try:
-            request("http://cng.gmu.edu:8080/api/health", verify=False)
-        except requests.exceptions.RequestException as e:
-            raise ConnectionError(
-                f"It seems that neuromorpho API is down: {e}"
-            )
+            health_url = "/".join(self._base_url.split("/")[:-1]) + "/health"
+            request(health_url, verify=False)
+        except (requests.exceptions.RequestException, ValueError):
+            try:
+                self._base_url = "http://neuromorpho.org/api/neuron"
+                health_url = (
+                    "/".join(self._base_url.split("/")[:-1]) + "/health"
+                )
+                request(health_url, verify=False)
+            except (
+                requests.exceptions.RequestException,
+                ValueError,
+            ) as e:
+                raise ConnectionError(
+                    f"It seems that neuromorpho API is down: {e}"
+                )
 
         self._fields = None
 
