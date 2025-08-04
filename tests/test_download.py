@@ -9,7 +9,14 @@ from morphapi.api.neuromorphorg import NeuroMorpOrgAPI
 
 
 def test_neuromorpho_download(tmpdir):
-    api = NeuroMorpOrgAPI(base_dir=tmpdir)
+    try:
+        api = NeuroMorpOrgAPI(base_dir=tmpdir)
+    except ConnectionError as e:
+        pytest.skip(
+            "Skipping Neuromorpho tests due to connection error: {}".format(e)
+        )
+        return
+
     cache_path = Path(api.neuromorphorg_cache)
 
     # Test get_fields_values
@@ -91,7 +98,13 @@ def test_mouselight_download(tmpdir):
     )
     neurons_metadata = sorted(neurons_metadata, key=lambda x: x["idString"])
 
-    neurons = mlapi.download_neurons(neurons_metadata[0])
+    try:
+        neurons = mlapi.download_neurons(neurons_metadata[0])
+    except ConnectionError as e:
+        pytest.skip(
+            "Skipping MouseLight tests due to connection error: {}".format(e)
+        )
+        return
 
     neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
@@ -105,7 +118,13 @@ def test_mouselight_download(tmpdir):
 
     # Test failure
     neurons_metadata[0]["idString"] = "BAD ID"
-    neurons = mlapi.download_neurons(neurons_metadata[0])
+    try:
+        neurons = mlapi.download_neurons(neurons_metadata[0])
+    except ConnectionError as e:
+        pytest.skip(
+            "Skipping MouseLight failure test due to error: {}".format(e)
+        )
+        return
 
     assert neurons[0].data_file.name == "BAD ID.swc"
     assert neurons[0].points is None
