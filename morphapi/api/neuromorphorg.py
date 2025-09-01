@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class NeuroMorpOrgAPI(Paths):
     # Use the URL as advised in the API docs:
     # https://neuromorpho.org/apiReference.html#introduction
-    _base_url = "http://cng.gmu.edu:8080/api/neuron"
+    _base_url = "http://cngpro.gmu.edu:8080/api/neuron"
 
     _version = "CNG version"  # which swc version, standardized or original
 
@@ -29,14 +29,24 @@ class NeuroMorpOrgAPI(Paths):
         # Check that neuromorpho.org is not down
         try:
             health_url = "/".join(self._base_url.split("/")[:-1]) + "/health"
-            request(health_url, verify=False)
-        except (requests.exceptions.RequestException, ValueError):
+            response = request(health_url, verify=False)
+            if not response.ok or response.json().get("status") != "UP":
+                raise ConnectionError("It seems that neuromorpho API is down")
+        except (
+            requests.exceptions.RequestException,
+            ValueError,
+            ConnectionError,
+        ):
             try:
-                self._base_url = "http://neuromorpho.org/api/neuron"
+                self._base_url = "https://neuromorpho.org/api/neuron"
                 health_url = (
                     "/".join(self._base_url.split("/")[:-1]) + "/health"
                 )
-                request(health_url, verify=False)
+                response = request(health_url, verify=False)
+                if not response.ok or response.json().get("status") != "UP":
+                    raise ConnectionError(
+                        "It seems that neuromorpho API is down"
+                    )
             except (
                 requests.exceptions.RequestException,
                 ValueError,
@@ -226,12 +236,12 @@ class NeuroMorpOrgAPI(Paths):
                 # Download and write to file
                 if self._version == "CNG version":
                     url = (
-                        f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/"
+                        f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/"
                         f"CNG version/{neuron['neuron_name']}.CNG.swc"
                     )
                 else:
                     url = (
-                        f"https://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/"
+                        f"http://neuromorpho.org/dableFiles/{neuron['archive'].lower()}/"
                         f"{self._version}/{neuron['neuron_name']}.swc"
                     )
 

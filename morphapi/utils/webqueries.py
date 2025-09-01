@@ -1,5 +1,6 @@
 import ssl
 import time
+from importlib.metadata import version
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -36,7 +37,8 @@ def request(url, verify=True):
 
     session = requests.Session()
     session.mount("https://", NoDhAdapter())
-    response = session.get(url, verify=verify)
+    headers = {"User-Agent": f"morphapi/{version('morphapi')}"}
+    response = session.get(url, headers=headers, verify=verify)
 
     if response.ok:
         return response
