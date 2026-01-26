@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from morphapi.api.allenmorphology import AllenMorphology
@@ -159,8 +160,8 @@ def test_allen_morphology_download(tmpdir):
     )
 
     # Test failure
-    neurons_df.loc[2, "id"] = "BAD ID"
+    neurons_df.loc[2, "id"] = np.iinfo(np.int64).min  # intentionally bad ID
     neurons = am.download_neurons(neurons_df["id"].values)
 
-    assert neurons[0].data_file.name == "BAD ID.swc"
+    assert neurons[0].data_file.name == f"{np.iinfo(np.int64).min}.swc"
     assert neurons[0].points is None
