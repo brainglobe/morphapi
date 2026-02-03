@@ -175,9 +175,7 @@ def make_query(filterby=None, filter_regions=None, invert=False):
                             {}
                         }}
                     }}
-                    """.format(
-            searchneurons
-        )
+                    """.format(searchneurons)
     else:
         raise NotImplementedError("This feature is not available yet")
         # Get predicate type
