@@ -9,11 +9,10 @@ dynamic = ["version"]
 dependencies = [
     "brainglobe-atlasapi >=2.0.1",
     "brainglobe-space >=1.0.0",
-    "h5py<3.16.0",
     "imagecodecs",
     "neurom>=3",
     "numpy",
-    "morphio>=3.4.0",
+    "morphio>=3.4.2",
     "pandas",
     "pyyaml>=5.3",
     "requests",
