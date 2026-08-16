@@ -47,7 +47,6 @@ dev = [
     "pytest",
     "pytest-cov",
     "coverage",
-    "tox",
     "black",
     "mypy",
     "pre-commit",
@@ -70,7 +69,7 @@ include = ["morphapi*"]
 exclude = ["tests*", "examples*"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=morphapi"
+addopts = "--cov=morphapi --cov-report=xml --color=yes -vv"
 
 [tool.black]
 target-version = ['py311','py312', 'py313']
@@ -95,22 +94,3 @@ fix = true
 
 [tool.ruff.lint]
 select = ["I", "E", "F"]
-
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-envlist = py{311,312,313}
-isolated_build = True
-
-[gh-actions]
-python =
-    3.11: py311
-    3.12: py312
-    3.13: py313
-
-[testenv]
-extras =
-    dev
-commands =
-    pytest -v --color=yes --cov=morphapi --cov-report=xml
-"""
