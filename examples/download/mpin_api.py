@@ -25,6 +25,6 @@ print("creating meshes")
 neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
 print("visualizing")
-vp = Plotter(shape=(1, len(neurons)), axes=1)
+vp = Plotter(axes=1)
+vp.show(neurons, interactive=True)
 
-vp.show(neurons)

@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 from brainglobe_atlasapi import BrainGlobeAtlas
 from brainglobe_atlasapi.utils import retrieve_over_http
-from brainglobe_space import SpaceConvention
+from brainglobe_space import AnatomicalSpace
 from rich.progress import track
 
 from morphapi.morphology.morphology import Neuron
@@ -38,7 +38,7 @@ def fix_mpin_swgfile(file_path, fixed_file_path=None):
     TARGET_SPACE = "asl"
     NEW_SOMA_SIZE = 7
 
-    bgspace = SpaceConvention(origin=ORIGIN, shape=SHAPE)
+    bgspace = AnatomicalSpace(origin=ORIGIN, shape=SHAPE)
 
     df = pd.read_csv(file_path, sep=" ", header=None, comment="#")
 
@@ -75,7 +75,7 @@ class MpinMorphologyAPI(Paths):
         """Table with all neurons positions and soma regions."""
         if self._neurons_df is None:
             # Generate table with soma position to query by region:
-            atlas = BrainGlobeAtlas("mpin_zfish_1um", print_authors=False)
+            atlas = BrainGlobeAtlas("mpin_zfish_1um")
 
             neurons_dict = dict()
             for f in self.data_path.glob("*.swc"):
@@ -136,11 +136,10 @@ class MpinMorphologyAPI(Paths):
             raise ValueError(
                 "An internet connection is required to download the dataset"
             )
-        SOURCE_DATA_DIR = "MPIN-Atlas__Kunst_et_al__neurons_all"
+        SOURCE_DATA_DIR = "Aligned"
 
         REMOTE_URL = (
-            "https://fishatlas.neuro.mpg.de/neurons/download/"
-            "download_all_neurons_aligned"
+            "https://api.mapzebrain.org/media/downloads/Neurons/mapZebrain__neurons.zip"
         )
 
         # # Download folder with all data:
