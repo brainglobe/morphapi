@@ -138,9 +138,7 @@ class MpinMorphologyAPI(Paths):
             )
         SOURCE_DATA_DIR = "Aligned"
 
-        REMOTE_URL = (
-            "https://api.mapzebrain.org/media/downloads/Neurons/mapZebrain__neurons.zip"
-        )
+        REMOTE_URL = "https://api.mapzebrain.org/media/downloads/Neurons/mapZebrain__neurons.zip"
 
         # # Download folder with all data:
         download_zip_path = Path(self.mpin_morphology) / "data.zip"
