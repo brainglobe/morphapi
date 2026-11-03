@@ -11,9 +11,6 @@ from morphapi.api.mpin_celldb import MpinMorphologyAPI
 api = MpinMorphologyAPI()
 
 
-api.download_dataset()
-
-
 # You can then inspect metadata about all neurons:
 print(api.neurons_df.head())
 

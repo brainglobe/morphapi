@@ -78,7 +78,7 @@ class MpinMorphologyAPI(Paths):
             atlas = BrainGlobeAtlas("mpin_zfish_1um")
 
             neurons_dict = dict()
-            for f in self.data_path.glob("*.swc"):
+            for f in sorted(self.data_path.glob("*.swc")):
                 coords = soma_coords_from_file(f)  # compute coordinates
 
                 # Calculate anatomical structure the neuron belongs to:
