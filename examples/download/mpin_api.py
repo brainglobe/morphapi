@@ -11,9 +11,6 @@ from morphapi.api.mpin_celldb import MpinMorphologyAPI
 api = MpinMorphologyAPI()
 
 
-api.download_dataset()
-
-
 # You can then inspect metadata about all neurons:
 print(api.neurons_df.head())
 
@@ -25,6 +22,5 @@ print("creating meshes")
 neurons = [neuron.create_mesh()[1] for neuron in neurons]
 
 print("visualizing")
-vp = Plotter(shape=(1, len(neurons)), axes=1)
-
-vp.show(neurons)
+vp = Plotter(axes=1)
+vp.show(neurons, interactive=True)
